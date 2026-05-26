@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | Vansha Lineage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.bg-heritage-gradient {
+    background: radial-gradient(circle at top left, #fbf9f7 0%, #efedec 40%, #d2e8d6 100%)
+    }
+.archival-grain {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCmvnohc70inQTWdC0H5W-_LyYf1H5QX2mAbjonyfkJOLgZZsxAzgRbuE08aRghlzYIHaDB20tH2JhbTw3bDjq8NUuyt72Hdw8_-PsAh_3XyK6XWNzo-zzPfY6P527U94fuSiz-RhEABHlBd991N2WED4sfdEvh8c3hrAfImY9Do5LHKFu2KElA7shz9phPoOUaYItVfrEA0e9wL89ueW74zPC5gGC0McofDGlEcpOEy2RfxgAh-nNnzwleYlviOEjx6HBQhjRFQR4);
+    opacity: 0.05
+    }
+.error-shake {
+    animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both
+    }
+@keyframes shake {
+    10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+        } 20%, 80% {
+        transform: translate3d(2px, 0, 0);
+        } 30%, 50%, 70% {
+        transform: translate3d(-4px, 0, 0);
+        } 40%, 60% {
+        transform: translate3d(4px, 0, 0);
+        }
+    }
+.spinner {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 2px solid #fff;
+    width: 18px;
+    height: 18px;
+    animation: spin 0.8s linear infinite
+    }
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+        } 100% {
+        transform: rotate(360deg);
+        }
+    }</style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1b1c1b",
+                        "inverse-surface": "#30302f",
+                        "tertiary-fixed": "#ffdbc8",
+                        "on-tertiary-fixed": "#301401",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#635d5a",
+                        "tertiary-fixed-dim": "#f2bb9a",
+                        "on-surface-variant": "#4d4540",
+                        "tertiary-container": "#42210a",
+                        "on-secondary-fixed": "#0d1f14",
+                        "on-tertiary-fixed-variant": "#643e25",
+                        "background": "#fbf9f7",
+                        "on-secondary": "#ffffff",
+                        "primary": "#181512",
+                        "on-background": "#1b1c1b",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#cdc5c0",
+                        "surface-bright": "#fbf9f7",
+                        "outline": "#7e756f",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#e9e1dc",
+                        "outline-variant": "#cfc4bd",
+                        "surface-container-high": "#eae8e6",
+                        "on-secondary-fixed-variant": "#384b3e",
+                        "on-primary-fixed": "#1e1b18",
+                        "primary-container": "#2d2926",
+                        "surface-container": "#efedec",
+                        "surface-variant": "#e4e2e0",
+                        "on-primary-container": "#96908b",
+                        "surface-dim": "#dbdad8",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#b6ccba",
+                        "inverse-on-surface": "#f2f0ee",
+                        "secondary-container": "#cfe5d3",
+                        "surface-container-highest": "#e4e2e0",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#cdc5c0",
+                        "surface": "#fbf9f7",
+                        "on-tertiary-container": "#b78668",
+                        "on-primary-fixed-variant": "#4b4642",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#280e00",
+                        "secondary-fixed": "#d2e8d6",
+                        "on-secondary-container": "#546759",
+                        "secondary": "#506354",
+                        "surface-container-low": "#f5f3f1"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Libre Caslon Text"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "display-lg": ["Libre Caslon Text"],
+                        "display-lg-mobile": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-body-md text-body-md bg-heritage-gradient min-h-screen flex items-center justify-center relative overflow-hidden">
+<!-- Atmospheric Texture Layer -->
+<div class="absolute inset-0 archival-grain pointer-events-none"></div>
+<!-- Floating Background Orbs for Depth -->
+<div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-secondary-container/30 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-tertiary-fixed/20 blur-[120px] rounded-full"></div>
+<main class="w-full max-w-md px-margin-mobile md:px-0 z-10">
+<!-- Brand Header (Prior to Card) -->
+<div class="text-center mb-8">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight mb-2">Vansha Lineage</h1>
+<p class="font-body-md text-on-surface-variant italic">Connecting the threads of your family's story.</p>
+</div>
+<!-- Premium Login Card -->
+<div class="bg-surface/70 backdrop-blur-xl border border-outline-variant/50 rounded-xl shadow-[0_12px_40px_rgba(45,41,38,0.08)] p-8 md:p-10 transition-all duration-500">
+<form class="space-y-6" id="loginForm" onsubmit="handleLogin(event)">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="email">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+                        Email Address
+                    </label>
+<div class="relative group">
+<input class="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-1 text-primary focus:ring-0 focus:border-secondary transition-all placeholder:text-outline-variant/60" id="email" name="email" placeholder="ancestor@vansha.com" required="" type="email"/>
+<div class="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full"></div>
+</div>
+<p class="hidden text-error text-caption mt-1 font-medium italic" id="email-error">Please enter a valid archival email.</p>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2" for="password">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                        Password
+                    </label>
+<div class="relative group">
+<input class="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-1 text-primary focus:ring-0 focus:border-secondary transition-all placeholder:text-outline-variant/60" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<div class="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full"></div>
+<button class="absolute right-1 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined" id="password-toggle-icon">visibility</span>
+</button>
+</div>
+<p class="hidden text-error text-caption mt-1 font-medium italic" id="password-error">Credentials do not match our records.</p>
+</div>
+<!-- Extras: Remember & Forgot -->
+<div class="flex items-center justify-between pt-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-4 h-4 rounded-sm border-outline-variant text-secondary focus:ring-secondary/20 bg-transparent" type="checkbox"/>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-primary transition-colors">Remember me</span>
+</label>
+<a class="font-label-md text-label-md text-secondary hover:text-on-tertiary-container transition-colors underline-offset-4 hover:underline" href="#">Forgot password?</a>
+</div>
+<!-- Primary CTA -->
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-all active:scale-[0.98] shadow-sm mt-4" id="submitBtn" type="submit">
+<span id="btnText">Enter the Archive</span>
+<span class="hidden spinner" id="btnSpinner"></span>
+</button>
+</form>
+<!-- Secondary Footer Actions -->
+<div class="mt-10 pt-6 border-t border-outline-variant/30 text-center">
+<p class="font-body-md text-on-surface-variant">
+                    New to the lineage? 
+                    <a class="text-primary font-semibold hover:underline underline-offset-4 ml-1" href="#">Create an account</a>
+</p>
+</div>
+</div>
+<!-- Footer Credits -->
+<footer class="mt-8 text-center text-on-surface-variant/60 font-caption space-y-2">
+<p>© 2024 Vansha Lineage. Preserving history for the next generation.</p>
+<div class="flex justify-center gap-4">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<span class="text-outline-variant">•</span>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</footer>
+</main>
+<script>
+        function togglePassword() {
+            const pwd = document.getElementById('password');
+            const icon = document.getElementById('password-toggle-icon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.innerText = 'visibility_off';
+            } else {
+                pwd.type = 'password';
+                icon.innerText = 'visibility';
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const emailField = document.getElementById('email');
+            const emailError = document.getElementById('email-error');
+            const passwordError = document.getElementById('password-error');
+            const formCard = document.querySelector('.bg-surface\\/70');
+
+            // Reset States
+            emailError.classList.add('hidden');
+            passwordError.classList.add('hidden');
+            formCard.classList.remove('error-shake');
+
+            // Basic Validation Check for simulation
+            if (!emailField.value.includes('@')) {
+                emailError.classList.remove('hidden');
+                formCard.classList.add('error-shake');
+                return;
+            }
+
+            // Enter Loading State
+            btn.disabled = true;
+            btnText.innerText = 'Verifying Lineage...';
+            btnSpinner.classList.remove('hidden');
+            btn.classList.add('opacity-80');
+
+            // Simulate Network Delay
+            setTimeout(() => {
+                // For demo purposes, we trigger an error state after 2 seconds
+                btn.disabled = false;
+                btnText.innerText = 'Enter the Archive';
+                btnSpinner.classList.add('hidden');
+                btn.classList.remove('opacity-80');
+                
+                passwordError.classList.remove('hidden');
+                formCard.classList.add('error-shake');
+                
+                // Remove shake after animation completes
+                setTimeout(() => formCard.classList.remove('error-shake'), 400);
+            }, 2000);
+        }
+    </script>
+</body></html>

@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2021",
+    "lib": ["ES2021"],
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "../..",
+    "baseUrl": "./",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "paths": {
+      "@app/*": ["src/*"],
+      "@common/*": ["src/common/*"],
+      "@vansha/shared-types": ["../../packages/shared-types/src"],
+      "@vansha/graph-engine": ["../../packages/graph-engine/src"]
+    }
+  },
+  "include": ["src/**/*", "../web/page.tsx"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+}

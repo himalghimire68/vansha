@@ -1,0 +1,106 @@
+version: '3.9'
+
+services:
+  # PostgreSQL - Relational database for metadata, governance, auth
+  postgres:
+    image: postgres:15-alpine
+    container_name: vansha-postgres
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-vansha}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-vansha_password}
+      POSTGRES_DB: ${DATABASE_NAME:-vansha_db}
+      POSTGRES_INITDB_ARGS: "-c log_statement=all -c log_duration=on"
+    ports:
+      - "${DATABASE_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-vansha}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vansha-network
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+
+  # Neo4j - Graph database for genealogical relationships
+  neo4j:
+    image: neo4j:5-enterprise
+    container_name: vansha-neo4j
+    environment:
+      NEO4J_AUTH: ${NEO4J_USERNAME:-neo4j}/${NEO4J_PASSWORD:-neo4j_password}
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_memory_heap_max__size: 2G
+      NEO4J_dbms_memory_pagecache_size: 1G
+    ports:
+      - "7474:7474"  # Web UI
+      - "${NEO4J_PORT:-7687}:7687"  # Bolt protocol
+    volumes:
+      - neo4j_data:/var/lib/neo4j/data
+      - neo4j_logs:/var/lib/neo4j/logs
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u ${NEO4J_USERNAME:-neo4j} -p ${NEO4J_PASSWORD:-neo4j_password} 'MATCH (n) RETURN COUNT(n) as count' 2>/dev/null || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - vansha-network
+
+  # Redis - Caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: vansha-redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vansha-network
+    command: redis-server --appendonly yes
+
+  # Meilisearch - Full-text search engine
+  meilisearch:
+    image: getmeili/meilisearch:v1.7
+    container_name: vansha-meilisearch
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_API_KEY:-test_key_dev_only}
+      MEILI_ENV: development
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilisearch_data:/meili_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vansha-network
+
+volumes:
+  postgres_data:
+    driver: local
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+    driver: local
+  redis_data:
+    driver: local
+  meilisearch_data:
+    driver: local
+
+networks:
+  vansha-network:
+    driver: bridge

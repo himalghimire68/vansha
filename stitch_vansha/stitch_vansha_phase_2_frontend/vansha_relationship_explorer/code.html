@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vansha | Relationship Explorer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shadow-brand {
+            box-shadow: 0 4px 20px rgba(45, 41, 38, 0.05);
+        }
+        .path-animation {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 2s ease-out forwards;
+        }
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse-soft {
+            animation: pulseSoft 2s infinite;
+        }
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#1b1c1b",
+                    "inverse-surface": "#30302f",
+                    "tertiary-fixed": "#ffdbc8",
+                    "on-tertiary-fixed": "#301401",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#635d5a",
+                    "tertiary-fixed-dim": "#f2bb9a",
+                    "on-surface-variant": "#4d4540",
+                    "tertiary-container": "#42210a",
+                    "on-secondary-fixed": "#0d1f14",
+                    "on-tertiary-fixed-variant": "#643e25",
+                    "background": "#fbf9f7",
+                    "on-secondary": "#ffffff",
+                    "primary": "#181512",
+                    "on-background": "#1b1c1b",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#cdc5c0",
+                    "surface-bright": "#fbf9f7",
+                    "outline": "#7e756f",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed": "#e9e1dc",
+                    "outline-variant": "#cfc4bd",
+                    "surface-container-high": "#eae8e6",
+                    "on-secondary-fixed-variant": "#384b3e",
+                    "on-primary-fixed": "#1e1b18",
+                    "primary-container": "#2d2926",
+                    "surface-container": "#efedec",
+                    "surface-variant": "#e4e2e0",
+                    "on-primary-container": "#96908b",
+                    "surface-dim": "#dbdad8",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#b6ccba",
+                    "inverse-on-surface": "#f2f0ee",
+                    "secondary-container": "#cfe5d3",
+                    "surface-container-highest": "#e4e2e0",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#cdc5c0",
+                    "surface": "#fbf9f7",
+                    "on-tertiary-container": "#b78668",
+                    "on-primary-fixed-variant": "#4b4642",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary": "#280e00",
+                    "secondary-fixed": "#d2e8d6",
+                    "on-secondary-container": "#546759",
+                    "secondary": "#506354",
+                    "surface-container-low": "#f5f3f1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1280px",
+                    "margin-desktop": "64px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "caption": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Libre Caslon Text"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Libre Caslon Text"],
+                    "display-lg": ["Libre Caslon Text"],
+                    "display-lg-mobile": ["Libre Caslon Text"]
+            },
+            "fontSize": {
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen selection:bg-secondary-container">
+<!-- TopAppBar Shell -->
+<header class="sticky top-0 z-50 flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 backdrop-blur-md bg-surface/90 border-b border-outline-variant">
+<div class="flex items-center gap-6">
+<span class="font-headline-md text-headline-md text-primary tracking-tight">Vansha Lineage</span>
+<nav class="hidden md:flex gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-medium" href="#">Dashboard</a>
+<a class="text-primary font-semibold border-b-2 border-primary pb-1 transition-colors duration-200" href="#">Explorer</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-medium" href="#">Stories</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<img alt="User avatar" class="w-10 h-10 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcqewMQPRW3G_m0tXZWW1xBDqiXk9sBnWxXAXgYBVBYMiqKLXrbnR6Q9qMNL3WoeNblwhhUKhi9h_cmxvoXMt8ThJjGr36lP-wbyIcf2VOM9I5lM_woCjUrEZlZFG_dsodDaWEphYe0gF8263gc-5AeAHh_7ZevMG9s2TBdV4IoqJVxA-l4tWx0iZT8KRgBBPyebra6ePcSyvEWdz_WnrT3y-6aXvLe9Mnmf4yvjRfp_zl7JOQo1YJ38V-aZ_dhxxvgg7rON3b33E"/>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar Shell (Desktop) -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-80px)] p-6 gap-4 sticky top-20 bg-surface-container-low border-r border-outline-variant w-64">
+<div class="mb-6">
+<h2 class="font-headline-md text-headline-md text-primary">Vansha</h2>
+<p class="font-label-md text-label-md text-on-surface-variant opacity-70 uppercase tracking-widest text-[10px]">The Living Archive</p>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-md text-label-md">Ancestry Tree</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="font-label-md text-label-md">Family Stories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Document Archive</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-label-md text-label-md">Life Events</span>
+</a>
+</nav>
+<button class="mt-8 bg-primary text-on-primary py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">add</span>
+                Add Ancestor
+            </button>
+<div class="mt-auto flex flex-col gap-2 pt-6 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md text-[13px]">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md text-[13px]">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-mobile md:px-margin-desktop py-12 max-w-container-max mx-auto overflow-hidden">
+<header class="mb-12 max-w-2xl">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-4">Relationship Explorer</h1>
+<p class="text-on-surface-variant font-body-lg">Discover the invisible threads connecting your family's history. Select two individuals to map their shared legacy.</p>
+</header>
+<!-- Dual Person Selector -->
+<section class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-center mb-16 fade-in-up">
+<div class="relative group">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">First Ancestor</label>
+<div class="flex items-center bg-surface-container-low border-b border-outline p-4 rounded-t-xl transition-all group-focus-within:border-secondary">
+<span class="material-symbols-outlined mr-3 text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-lg placeholder:text-on-surface-variant/40" placeholder="e.g. Alistair Vansha..." type="text" value="Alistair Vansha"/>
+</div>
+<div class="absolute w-full mt-1 bg-surface-container-lowest border border-outline-variant rounded-b-xl shadow-brand hidden group-focus-within:block z-10">
+<div class="p-4 hover:bg-surface-container cursor-pointer flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">AV</div>
+<div>
+<p class="font-label-md">Alistair Vansha</p>
+<p class="text-caption text-on-surface-variant">1842 - 1912 • Great Grandfather</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-center">
+<div class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant">swap_horiz</span>
+</div>
+</div>
+<div class="relative group">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Second Ancestor</label>
+<div class="flex items-center bg-surface-container-low border-b border-outline p-4 rounded-t-xl transition-all group-focus-within:border-secondary">
+<span class="material-symbols-outlined mr-3 text-on-surface-variant">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-lg placeholder:text-on-surface-variant/40" placeholder="e.g. Elena Vansha..." type="text" value="Elena Vansha"/>
+</div>
+</div>
+</section>
+<!-- Loading State (Toggled via JS simulation) -->
+<div class="hidden flex flex-col items-center justify-center py-20 gap-6" id="loading-state">
+<div class="relative">
+<div class="w-20 h-20 border-4 border-outline-variant border-t-secondary rounded-full animate-spin"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-3xl pulse-soft">auto_awesome</span>
+</div>
+</div>
+<p class="font-headline-md text-on-surface-variant italic">Tracing generations...</p>
+</div>
+<!-- Results Visualization -->
+<div class="space-y-16" id="results-display">
+<div class="flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-surface-container-lowest rounded-3xl border border-outline-variant shadow-brand relative overflow-hidden">
+<!-- Subtle background texture -->
+<div class="absolute top-0 right-0 w-64 h-64 opacity-[0.03] pointer-events-none">
+<span class="material-symbols-outlined text-[200px]" style="font-variation-settings: 'wght' 100;">family_history</span>
+</div>
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-secondary uppercase tracking-[0.2em] mb-2">The Connection</h3>
+<p class="font-headline-lg text-headline-lg text-primary leading-tight">Elena is the <span class="border-b-2 border-secondary-container">Great-Grandniece</span> of Alistair Vansha.</p>
+<p class="mt-4 text-on-surface-variant max-w-lg">A direct link established through the lineage of Alistair’s younger brother, Edmund, dating back to the spring of 1864.</p>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-3 border-[1.5px] border-tertiary-container text-tertiary-container font-semibold rounded-xl hover:bg-tertiary-fixed transition-all flex items-center gap-2" onclick="window.location.reload()">
+<span class="material-symbols-outlined">restart_alt</span>
+                            Search Again
+                        </button>
+<button class="px-6 py-3 bg-primary text-on-primary font-semibold rounded-xl hover:opacity-90 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">dashboard</span>
+                            Back to Dashboard
+                        </button>
+</div>
+</div>
+<!-- Path Visualization -->
+<div class="relative bg-surface rounded-[40px] p-8 md:p-16 border border-outline-variant/30 overflow-hidden">
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-12 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">share</span>
+                        VISUAL LINEAGE PATH
+                    </h4>
+<!-- SVG Connection Line -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" viewbox="0 0 1000 400">
+<path d="M150,200 C300,200 400,100 500,100 S700,300 850,300" fill="none" stroke="#cfc4bd" stroke-dasharray="8,8" stroke-width="2"></path>
+<path class="path-animation" d="M150,200 C300,200 400,100 500,100 S700,300 850,300" fill="none" stroke="#506354" stroke-width="2"></path>
+</svg>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-gutter relative">
+<!-- Ancestor Card 1 -->
+<div class="flex flex-col items-center">
+<div class="relative mb-6">
+<div class="w-32 h-40 rounded-[20px] overflow-hidden border-2 border-primary shadow-brand group cursor-pointer">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="A dignified historical portrait of a Victorian era man with a well-groomed beard and formal attire. The lighting is warm and reminiscent of old sepia-toned photography, with a soft blur in the background. The mood is solemn and reflective, emphasizing heritage and ancestral weight in a sophisticated, minimalist archive style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDahCYSA4GaknInn5UMpQGDZCknQHBP9eWdCHlR0metq-Bu_N1veApVnK0O5LtpAa5goy-YB3yUgbmZNXcEYv08lpRX0AObVWZ04aVH2cyaVz-Fq5I2xVHO1WHQxCdwf8k2QRAd4a4UejUD40pJqnN5sHiAZ6Twgz0pPBGlf_XbqeNvH9foMf8DmXMaitG_S3P67io17WlXgZP_rsBQF-yBEnpCuTLhwGd5Xrn6q0yuYTmOtnTKEzAPhXGewi94kUp7reol50fsTa4"/>
+<div class="absolute top-2 right-2 w-3 h-3 bg-tertiary-container rounded-full border-2 border-surface"></div>
+</div>
+</div>
+<h5 class="font-headline-md text-headline-md text-center">Alistair Vansha</h5>
+<p class="font-label-md text-on-surface-variant">1842 - 1912</p>
+</div>
+<!-- Common Ancestor (The Node) -->
+<div class="flex flex-col items-center justify-center md:-mt-24">
+<div class="bg-surface p-4 border border-outline-variant rounded-3xl shadow-brand z-10 hover:border-secondary transition-colors duration-300">
+<div class="flex flex-col items-center gap-4">
+<div class="w-16 h-16 rounded-full overflow-hidden border border-outline">
+<img class="w-full h-full object-cover grayscale" data-alt="A portrait of an elderly woman from the mid-19th century with elegant lace collars and a wise, calm expression. The visual style is high-end archival, with warm neutral tones and deep charcoal accents. The soft studio lighting highlights the texture of the period clothing, creating a sense of tactile history and familial permanence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDj-5BfHO7zZDjattfOig5lnE-rJOgOngZIt0KUQm8FIMIH8G4Kpf9ghgGFNW9TcuRnqC-j2BaoYgDwG9ZOR6ml2uTom5vdMs_J0W0a1qnRdK3gUk3va1p590arW_EWxNlf8iX1qHfncyOaz9CLADtfEGQQNNrm-7yR9l_lHER8Wqmd6fbYu5Qf443EeB9XpRzNA_mo7bAt_dpR3kOB8sU2POtnQ7tB_zTX45JDvrqMr-ivCqrFQAHfFIkxt7-waTsaVcvcyqURZu0"/>
+</div>
+<div class="text-center">
+<p class="text-[10px] uppercase tracking-widest text-secondary font-bold mb-1">Common Ancestor</p>
+<p class="font-headline-md text-lg">Margaret Vansha</p>
+<p class="font-label-md text-caption text-on-surface-variant">1810 - 1888</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Ancestor Card 2 -->
+<div class="flex flex-col items-center md:mt-24">
+<div class="relative mb-6">
+<div class="w-32 h-40 rounded-[20px] overflow-hidden border-2 border-secondary shadow-brand group cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" data-alt="A modern portrait of a young woman with a thoughtful expression, set against a clean, minimalist background with soft shadows. The lighting is bright and airy, representing the 'Living' part of the archive. The color palette features soft neutrals and forest green accents, blending contemporary fashion with a timeless, legacy-focused aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdBtBTjyJC7r1wH_jjPRTMTtdMnneh21Gm3BUUeeksNWVDzCACwN16xL6XNxrv8Ib4LrjJShaaeqVaf4XBcZTC2jBiXZO3VdqHmj_gEeqqOQf-8YS1Lrrn0HOMTSUMuOPNvi3bi1C5wxcx71Ie7QjIM0YdiaXNh_GWX_wAijl7Jk-pRXBbncUtJGUHojw_ng6_eLzu6bxbR34i-xXJJWKZPs-U8hG-M-qxr-wwykrYZGMlaLBjqIaS0vc1Ff7pr5w46RjNhxLxUVA"/>
+<div class="absolute top-2 right-2 w-3 h-3 bg-secondary rounded-full border-2 border-surface"></div>
+</div>
+</div>
+<h5 class="font-headline-md text-headline-md text-center">Elena Vansha</h5>
+<p class="font-label-md text-on-surface-variant">1994 - Present</p>
+</div>
+</div>
+</div>
+<!-- Life Events Intersection -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="p-8 bg-surface-container rounded-3xl">
+<h4 class="font-headline-md mb-6">Shared Legacy Locations</h4>
+<div class="space-y-4">
+<div class="flex items-center gap-4 bg-surface p-4 rounded-xl border border-outline-variant/30">
+<span class="material-symbols-outlined text-secondary">location_on</span>
+<div>
+<p class="font-label-md">Somerset Estate, UK</p>
+<p class="text-caption text-on-surface-variant">Ancestral home for 140 years</p>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface p-4 rounded-xl border border-outline-variant/30 opacity-60">
+<span class="material-symbols-outlined text-on-surface-variant">location_on</span>
+<div>
+<p class="font-label-md">Calcutta Trade Port</p>
+<p class="text-caption text-on-surface-variant">Family business hub (1880-1920)</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-8 bg-surface-container-high rounded-3xl relative overflow-hidden">
+<h4 class="font-headline-md mb-6">Discovery Stats</h4>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-2xl">
+<p class="text-display-lg text-primary leading-none mb-2">5</p>
+<p class="font-label-md text-on-surface-variant uppercase text-[10px] tracking-widest">Generations Apart</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl">
+<p class="text-display-lg text-secondary leading-none mb-2">12</p>
+<p class="font-label-md text-on-surface-variant uppercase text-[10px] tracking-widest">Shared DNA CM</p>
+</div>
+</div>
+<!-- Decorative motif -->
+<div class="absolute -bottom-4 -right-4 opacity-5">
+<span class="material-symbols-outlined text-[120px]">account_tree</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar Shell (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 md:hidden flex justify-around items-center px-4 py-3 pb-safe bg-surface border-t border-outline-variant shadow-sm rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md-mobile text-label-md-mobile text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-2xl px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">family_history</span>
+<span class="font-label-md-mobile text-label-md-mobile text-[10px]">Tree</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">folder_shared</span>
+<span class="font-label-md-mobile text-label-md-mobile text-[10px]">Vault</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md-mobile text-label-md-mobile text-[10px]">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction: Simulate searching state
+        function simulateSearch() {
+            const results = document.getElementById('results-display');
+            const loader = document.getElementById('loading-state');
+            
+            results.classList.add('hidden');
+            loader.classList.remove('hidden');
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                results.classList.remove('hidden');
+                results.classList.add('fade-in-up');
+            }, 1800);
+        }
+
+        // Just an initial call to show the "Search Again" can work
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') simulateSearch();
+            });
+        });
+    </script>
+</body></html>

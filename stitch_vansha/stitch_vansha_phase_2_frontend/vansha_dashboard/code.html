@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vansha Lineage | Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1b1c1b",
+                        "inverse-surface": "#30302f",
+                        "tertiary-fixed": "#ffdbc8",
+                        "on-tertiary-fixed": "#301401",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#635d5a",
+                        "tertiary-fixed-dim": "#f2bb9a",
+                        "on-surface-variant": "#4d4540",
+                        "tertiary-container": "#42210a",
+                        "on-secondary-fixed": "#0d1f14",
+                        "on-tertiary-fixed-variant": "#643e25",
+                        "background": "#fbf9f7",
+                        "on-secondary": "#ffffff",
+                        "primary": "#181512",
+                        "on-background": "#1b1c1b",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#cdc5c0",
+                        "surface-bright": "#fbf9f7",
+                        "outline": "#7e756f",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#e9e1dc",
+                        "outline-variant": "#cfc4bd",
+                        "surface-container-high": "#eae8e6",
+                        "on-secondary-fixed-variant": "#384b3e",
+                        "on-primary-fixed": "#1e1b18",
+                        "primary-container": "#2d2926",
+                        "surface-container": "#efedec",
+                        "surface-variant": "#e4e2e0",
+                        "on-primary-container": "#96908b",
+                        "surface-dim": "#dbdad8",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#b6ccba",
+                        "inverse-on-surface": "#f2f0ee",
+                        "secondary-container": "#cfe5d3",
+                        "surface-container-highest": "#e4e2e0",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#cdc5c0",
+                        "surface": "#fbf9f7",
+                        "on-tertiary-container": "#b78668",
+                        "on-primary-fixed-variant": "#4b4642",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#280e00",
+                        "secondary-fixed": "#d2e8d6",
+                        "on-secondary-container": "#546759",
+                        "secondary": "#506354",
+                        "surface-container-low": "#f5f3f1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Libre Caslon Text"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Libre Caslon Text"],
+                        "display-lg": ["Libre Caslon Text"],
+                        "display-lg-mobile": ["Libre Caslon Text"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .archival-shadow {
+            box-shadow: 0 4px 20px rgba(45, 41, 38, 0.05);
+        }
+        .canvas-container {
+            min-height: calc(100vh - 72px);
+        }
+        .glass-header {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-secondary-container">
+<!-- Desktop Side Navigation -->
+<aside class="hidden md:flex flex-col h-screen p-6 gap-4 sticky left-0 top-0 w-64 bg-surface-container-low border-r border-outline-variant z-50">
+<div class="mb-8">
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">Vansha</h1>
+<p class="font-label-md text-label-md text-on-surface-variant opacity-70">The Living Archive</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold transition-all duration-150 scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="font-label-md text-label-md">Ancestry Tree</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span class="font-label-md text-label-md">Family Stories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-md text-label-md">Document Archive</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span class="font-label-md text-label-md">Life Events</span>
+</a>
+</nav>
+<div class="pt-6 border-t border-outline-variant flex flex-col gap-2">
+<button class="w-full bg-primary text-on-primary py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="font-label-md text-label-md">Add Ancestor</span>
+</button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 glass-header bg-surface/90 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="md:hidden font-headline-md text-headline-md text-primary tracking-tight">Vansha Lineage</span>
+<div class="hidden md:flex items-center gap-6">
+<nav class="flex gap-8">
+<a class="text-primary font-semibold border-b-2 border-primary pb-1 font-label-md text-label-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#">Discover</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#">Collaborate</a>
+</nav>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex bg-surface-container rounded-full px-4 py-1.5 items-center gap-2 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md font-body-md p-0 w-48" placeholder="Search lineage..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-secondary-container">
+<img alt="User avatar" class="w-full h-full object-cover" data-alt="A high-quality, professional headshot of a person for a user profile avatar. The lighting is soft and cinematic, with a clean and minimalist background that complements a sophisticated, archival-themed UI. The color palette consists of warm neutrals and soft tones, reflecting a brand identity built on heritage and modern minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSkg-1XmHQ9umh5H0EEmqiy4fQQb308VS-dubDnK2Nsz3fwfC6HQQbTeFhkRhME2GFGerKxmKReMstK9MYVEj4XKeeI7GiALMMk9oZZvPLTmjb7KwRZ87szUmWkCcXmzKABvDfEkUASGELlIovku6rygQIaXJDkKkCfPbubY7SUmeD9wE_x2hXuGA05LOcbUyHa-vqNoN0uwsoLy2TmkdZhMKHjeJWGHy7h6DWy9tQ3lDqeQFmzyL44OZbnKq8dW7-IAfp7LhfoFg"/>
+</div>
+</div>
+</header>
+<main class="flex-1 p-margin-mobile md:p-margin-desktop space-y-12 max-w-container-max mx-auto w-full">
+<!-- Welcome Hero -->
+<section class="relative rounded-3xl overflow-hidden archival-shadow">
+<div class="absolute inset-0 bg-primary-container/90 mix-blend-multiply z-10"></div>
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover" data-alt="A vintage, sepia-toned photograph of a majestic, ancient oak tree with sprawling branches, symbolizing a family tree. The lighting is ethereal, with golden hour sunlight filtering through the leaves. The aesthetic is tactile and archival, evoking a sense of deep history, permanence, and organic growth, perfectly aligned with the Vansha brand pillars." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFcmNQisx59VDi4nNAsgCN4zXNkCCrNfXPfFHMIW39OCh3epdJsEMW4eAVxRWw7bK2FPAt3hGUkErr8jOY9x9mafh80ebfOgOvZCvXYJwQz-RUTTLMeXz8BiX-E9Dyan4zVIbT0_w96IxysOay2401RkJ5hDF1P2e-w6lujXUk83nHZredyHU5SQMTZ1cg41c_vkVZNVBjja0MW5IL7o-yRvr0e6DA8v3oILP3T_w3K6SMV1y-X1SnpXltWyWmFuuEXupSAD8DJ6E"/>
+</div>
+<div class="relative z-20 p-8 md:p-16 flex flex-col md:flex-row justify-between items-end md:items-center gap-8">
+<div class="max-w-2xl">
+<h2 class="font-headline-lg text-headline-lg text-white mb-4">Welcome back, Curator</h2>
+<p class="font-body-lg text-body-lg text-primary-fixed opacity-90 leading-relaxed">Your family's legacy continues to grow. You have 3 new archival contributions and 12 pending relationship verifications from the Mahajan branch.</p>
+</div>
+<button class="bg-surface text-primary py-4 px-8 rounded-xl font-bold flex items-center gap-3 hover:bg-primary-fixed transition-all shadow-xl whitespace-nowrap">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+                        New Family Tree
+                    </button>
+</div>
+</section>
+<!-- Quick Actions Bento -->
+<section>
+<h3 class="font-headline-md text-headline-md text-primary mb-6">Quick Actions</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant archival-shadow hover:border-secondary transition-all cursor-pointer">
+<div class="w-12 h-12 bg-secondary-container text-on-secondary-container rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="create_new_folder">create_new_folder</span>
+</div>
+<h4 class="font-label-md text-label-md text-primary mb-2">Create Family Tree</h4>
+<p class="font-caption text-caption text-on-surface-variant">Start a new branch of your ancestral history from scratch.</p>
+</div>
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant archival-shadow hover:border-secondary transition-all cursor-pointer">
+<div class="w-12 h-12 bg-tertiary-fixed text-on-tertiary-fixed rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+</div>
+<h4 class="font-label-md text-label-md text-primary mb-2">Explore Relationships</h4>
+<p class="font-caption text-caption text-on-surface-variant">AI-powered discovery of potential links between different lineages.</p>
+</div>
+<div class="group bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant archival-shadow hover:border-secondary transition-all cursor-pointer">
+<div class="w-12 h-12 bg-primary-fixed text-on-primary-fixed rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="group_add">group_add</span>
+</div>
+<h4 class="font-label-md text-label-md text-primary mb-2">Invite Family Members</h4>
+<p class="font-caption text-caption text-on-surface-variant">Collaborate with living relatives to fill in the missing pieces.</p>
+</div>
+</div>
+</section>
+<!-- Main Content Split -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+<!-- Trees Grid -->
+<div class="lg:col-span-2 space-y-6">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-primary">Your Family Trees</h3>
+<a class="text-secondary font-semibold hover:underline font-label-md text-label-md" href="#">View All</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Tree Card 1 -->
+<div class="bg-surface border border-outline-variant rounded-2xl overflow-hidden archival-shadow group">
+<div class="h-32 bg-surface-container relative">
+<img class="w-full h-full object-cover opacity-30 mix-blend-luminosity" data-alt="A soft-focus, artistic macro shot of delicate field flowers in early morning dew. The lighting is warm and golden, with a shallow depth of field. The style is romantic and archival, using a palette of soft creams, heritage golds, and forest greens to symbolize the beauty of family growth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4lpIPVCys0BPy6WKOvrlT-SnzjCU4gsJgfLKPxX4GQSo7mt2KEOoSNA3N2Rss3GM4CHPCIfRl6BT9pkEsnjSF-4l8lbAzgND80ZD-tGlhgC0kYIvoupxpIaFHpIVBrucfv0DZM_OcHVrZq4jX6cZSMxBPng48omFE9UYb66rAC1z_am_uIiYh06XvQ2a5YhuXyg8PzX0kc36JSd6XSD81fs2jnCq0x7wvTBOXhMy8w41QlfAYRNmrqXz98VTCEcP_oVc14tDO3Hg"/>
+<div class="absolute top-4 right-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-caption font-semibold">Active</div>
+</div>
+<div class="p-6">
+<h4 class="font-headline-md text-headline-md mb-2">The Iyer Lineage</h4>
+<div class="flex items-center gap-4 text-on-surface-variant font-caption">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="person">person</span> 142 Members</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="history">history</span> Updated 2d ago</span>
+</div>
+</div>
+</div>
+<!-- Tree Card 2 -->
+<div class="bg-surface border border-outline-variant rounded-2xl overflow-hidden archival-shadow group">
+<div class="h-32 bg-surface-container relative">
+<img class="w-full h-full object-cover opacity-30 mix-blend-luminosity" data-alt="A high-end, artistic close-up of aged, textured parchment paper with elegant handwritten calligraphy and a wax seal. The lighting is dramatic, highlighting the tactile edges and historic weight of the document. The style is sophisticated and minimalist, using earthy neutrals and deep ink tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB521kXRoWZw6uzN20SU4eo8cnx1DBm83DO5m_5s-aFb_bnjBILwopa2WIEUCgsrmd0gS6oB-vf5kE_VLMpPG9d9oYwii3UhYvO-RHbwno15-TEkm3GERaLwYUTlDa-OZkd36yDPrbtC_TOKX2QT6ytBZjKK8GhZDE4QU_EDIRP1yjzs5A-4wlvxB5tK_Yw31O2TPN9F_82qbBCqZZmm1fSUpzXPixzhQgZ3yyg_fcMjZEp4VDqaLSjbjFDdEKOUtRcv9J3bXJUitE"/>
+<div class="absolute top-4 right-4 bg-surface-container-highest text-on-surface-variant px-3 py-1 rounded-full text-caption font-semibold">Archived</div>
+</div>
+<div class="p-6">
+<h4 class="font-headline-md text-headline-md mb-2">Deshmukh Records</h4>
+<div class="flex items-center gap-4 text-on-surface-variant font-caption">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="person">person</span> 86 Members</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm" data-icon="history">history</span> Updated 1m ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Feed -->
+<aside class="space-y-6">
+<h3 class="font-headline-md text-headline-md text-primary">Recent Activity</h3>
+<div class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant archival-shadow space-y-6">
+<div class="flex gap-4">
+<div class="mt-1 w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="auto_stories">auto_stories</span>
+</div>
+<div>
+<p class="text-body-md font-body-md text-primary leading-snug"><b>Anita S.</b> added a new story: <i>"The Crossing of the Narmada"</i></p>
+<span class="text-caption font-caption text-on-surface-variant">3 hours ago</span>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="mt-1 w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="photo_library">photo_library</span>
+</div>
+<div>
+<p class="text-body-md font-body-md text-primary leading-snug"><b>Vikram M.</b> uploaded 12 photos to the <i>Vault</i></p>
+<span class="text-caption font-caption text-on-surface-variant">Yesterday, 4:15 PM</span>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="mt-1 w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="person_add">person_add</span>
+</div>
+<div>
+<p class="text-body-md font-body-md text-primary leading-snug">New relationship confirmed in <b>Iyer Lineage</b></p>
+<span class="text-caption font-caption text-on-surface-variant">Dec 12, 2023</span>
+</div>
+</div>
+<button class="w-full text-center py-2 text-on-surface-variant font-semibold hover:text-primary transition-colors font-label-md text-label-md">View All Activity</button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 md:hidden flex justify-around items-center px-4 py-3 pb-safe bg-surface border-t border-outline-variant shadow-sm rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-2xl px-4 py-1 transition-transform active:scale-90 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md-mobile text-label-md-mobile">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high transition-transform active:scale-90 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="family_history">family_history</span>
+<span class="font-label-md-mobile text-label-md-mobile">Tree</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high transition-transform active:scale-90 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-md-mobile text-label-md-mobile">Vault</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-container-high transition-transform active:scale-90 duration-100" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md-mobile text-label-md-mobile">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple interaction for the dashboard
+        document.querySelectorAll('.archival-shadow').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'transform 0.2s ease-out';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[placeholder="Search lineage..."]');
+        if (searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('border-primary');
+                searchInput.parentElement.classList.remove('border-outline-variant');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('border-primary');
+                searchInput.parentElement.classList.add('border-outline-variant');
+            });
+        }
+    </script>
+</body></html>
