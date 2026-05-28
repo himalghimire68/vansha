@@ -5,35 +5,70 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import DashboardLayout from '@/app/dashboard-layout'
 import { api, ApiFamily, ApiPerson } from '@/lib/api'
+import { CrossFamilyPicker, PickedPerson } from '@/components/CrossFamilyPicker'
 
-// ─── Assign-parents modal ──────────────────────────────────────────────────
-function AssignParentsModal({
+// ─── Assign relations modal (parents + offspring, cross-family) ────────────
+function AssignRelationsModal({
   person,
-  people,
+  allPeople,
   onClose,
   onSaved,
 }: {
   person: ApiPerson
-  people: ApiPerson[]
+  allPeople: ApiPerson[]
   onClose: () => void
-  onSaved: (updated: ApiPerson) => void
+  onSaved: (updates: ApiPerson[]) => void
 }) {
-  const [fatherId, setFatherId] = useState(person.fatherId ?? '')
-  const [motherId, setMotherId] = useState(person.motherId ?? '')
+  const [tab, setTab] = useState<'parents' | 'children'>('parents')
+  const [father, setFather] = useState<ApiPerson | null>(
+    allPeople.find(p => p.id === person.fatherId) ?? null
+  )
+  const [mother, setMother] = useState<ApiPerson | null>(
+    allPeople.find(p => p.id === person.motherId) ?? null
+  )
+  // Children to link: array of { person, role: 'father'|'mother' }
+  const [childLinks, setChildLinks] = useState<{ person: ApiPerson; role: 'father' | 'mother' }[]>([])
+  const [pendingChild, setPendingChild] = useState<ApiPerson | null>(null)
+  const [pendingRole, setPendingRole] = useState<'father' | 'mother'>('father')
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
 
-  const others = people.filter(p => p.id !== person.id)
+  const handlePickFather = (picked: PickedPerson | null) => {
+    setFather(picked ? { ...picked.person, _familyName: picked.familyName } : null)
+  }
+  const handlePickMother = (picked: PickedPerson | null) => {
+    setMother(picked ? { ...picked.person, _familyName: picked.familyName } : null)
+  }
+  const handlePickChild = (picked: PickedPerson | null) => {
+    if (picked) setPendingChild({ ...picked.person, _familyName: picked.familyName })
+    else setPendingChild(null)
+  }
+  const addChildLink = () => {
+    if (!pendingChild) return
+    if (childLinks.some(l => l.person.id === pendingChild.id)) return
+    setChildLinks(prev => [...prev, { person: pendingChild, role: pendingRole }])
+    setPendingChild(null)
+  }
+  const removeChildLink = (id: string) => setChildLinks(prev => prev.filter(l => l.person.id !== id))
 
   const handleSave = async () => {
-    setSaving(true)
-    setErr('')
+    setSaving(true); setErr('')
     try {
+      const results: ApiPerson[] = []
+      // Update this person's parents
       const updated = await api.updatePerson(person.familyId, person.id, {
-        fatherId: fatherId || null,
-        motherId: motherId || null,
+        fatherId: father?.id ?? null,
+        motherId: mother?.id ?? null,
       })
-      onSaved(updated)
+      results.push(updated)
+      // Link each child: PATCH the child to set their fatherId or motherId
+      for (const { person: child, role } of childLinks) {
+        const childUpdate = await api.updatePerson(child.familyId, child.id, {
+          [role === 'father' ? 'fatherId' : 'motherId']: person.id,
+        })
+        results.push(childUpdate)
+      }
+      onSaved(results)
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Failed to save.')
       setSaving(false)
@@ -42,70 +77,140 @@ function AssignParentsModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgba(13,34,24,0.55)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(13,34,24,0.6)' }}
       onClick={onClose}
     >
       <div
-        className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 w-full max-w-md archival-shadow-lg"
+        className="bg-surface-container-lowest border border-outline-variant rounded-2xl w-full max-w-lg archival-shadow-lg overflow-hidden flex flex-col"
+        style={{ maxHeight: '90vh' }}
         onClick={e => e.stopPropagation()}
       >
-        <h3 className="font-serif text-headline-md text-primary mb-1">
-          Link Parents
-        </h3>
-        <p className="font-sans text-caption text-on-surface-variant mb-6">
-          Assigning parents for <strong>{person.firstName} {person.lastName}</strong>
-        </p>
-
-        <div className="space-y-5">
-          <div>
-            <label className="text-caption font-sans text-on-surface-variant mb-1 block">Father</label>
-            <select
-              value={fatherId}
-              onChange={e => setFatherId(e.target.value)}
-              className="w-full border border-outline-variant rounded-xl px-4 py-3 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary bg-surface-container transition-colors"
-            >
-              <option value="">— None —</option>
-              {others.map(p => (
-                <option key={p.id} value={p.id}>
-                  {p.firstName} {p.lastName}
-                  {p.birthDate ? ` (b. ${new Date(p.birthDate).getFullYear()})` : ''}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="text-caption font-sans text-on-surface-variant mb-1 block">Mother</label>
-            <select
-              value={motherId}
-              onChange={e => setMotherId(e.target.value)}
-              className="w-full border border-outline-variant rounded-xl px-4 py-3 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary bg-surface-container transition-colors"
-            >
-              <option value="">— None —</option>
-              {others.map(p => (
-                <option key={p.id} value={p.id}>
-                  {p.firstName} {p.lastName}
-                  {p.birthDate ? ` (b. ${new Date(p.birthDate).getFullYear()})` : ''}
-                </option>
-              ))}
-            </select>
+        {/* Header */}
+        <div className="px-8 pt-7 pb-4 border-b border-outline-variant flex-shrink-0">
+          <h3 className="font-serif text-headline-md text-primary mb-0.5">Link Relations</h3>
+          <p className="font-sans text-caption text-on-surface-variant">
+            For <strong>{person.firstName} {person.lastName}</strong>
+          </p>
+          {/* Tabs */}
+          <div className="flex gap-1 mt-4">
+            {(['parents', 'children'] as const).map(t => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setTab(t)}
+                className={`px-4 py-2 rounded-xl text-label-md font-sans transition-all capitalize ${
+                  tab === t
+                    ? 'bg-primary text-on-primary'
+                    : 'text-on-surface-variant hover:bg-surface-container-high'
+                }`}
+              >
+                {t === 'parents' ? '👨‍👩‍👦 Parents' : '👶 Offspring'}
+              </button>
+            ))}
           </div>
         </div>
 
-        {err && <p className="text-v-error text-caption font-sans mt-4">{err}</p>}
+        {/* Body */}
+        <div className="overflow-y-auto flex-1 px-8 py-6 space-y-6">
+          {tab === 'parents' && (
+            <>
+              <CrossFamilyPicker
+                label="Father — pick from any family"
+                currentValue={father}
+                excludeId={person.id}
+                onPick={handlePickFather}
+              />
+              <CrossFamilyPicker
+                label="Mother — pick from any family"
+                currentValue={mother}
+                excludeId={person.id}
+                onPick={handlePickMother}
+              />
+            </>
+          )}
 
-        <div className="flex gap-3 mt-8">
+          {tab === 'children' && (
+            <div className="space-y-5">
+              <p className="text-caption font-sans text-on-surface-variant">
+                Select an existing person from any family and mark them as the
+                son/daughter of <strong>{person.firstName} {person.lastName}</strong>.
+              </p>
+
+              {/* Pending child picker */}
+              <CrossFamilyPicker
+                label="Select child to link"
+                currentValue={pendingChild}
+                excludeId={person.id}
+                onPick={handlePickChild}
+              />
+              {pendingChild && (
+                <div className="flex items-center gap-3">
+                  <span className="text-caption font-sans text-on-surface-variant">
+                    {person.firstName} is this child&apos;s:
+                  </span>
+                  <label className="flex items-center gap-1 text-caption font-sans text-primary cursor-pointer">
+                    <input type="radio" value="father" checked={pendingRole === 'father'}
+                           onChange={() => setPendingRole('father')} /> Father
+                  </label>
+                  <label className="flex items-center gap-1 text-caption font-sans text-primary cursor-pointer">
+                    <input type="radio" value="mother" checked={pendingRole === 'mother'}
+                           onChange={() => setPendingRole('mother')} /> Mother
+                  </label>
+                  <button
+                    type="button"
+                    onClick={addChildLink}
+                    className="ml-auto px-4 py-1.5 bg-secondary text-on-secondary text-label-md font-sans rounded-xl hover:opacity-90 transition-all"
+                  >
+                    + Add
+                  </button>
+                </div>
+              )}
+
+              {/* Queued child links */}
+              {childLinks.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-label-md font-sans text-on-surface-variant">To be linked:</p>
+                  {childLinks.map(({ person: child, role }) => (
+                    <div key={child.id}
+                         className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container">
+                      <span className="flex-1 font-sans text-body-md text-primary font-medium">
+                        {child.firstName} {child.lastName}
+                      </span>
+                      {child._familyName && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-sans"
+                              style={{ background: '#fef3c7', color: '#92400e' }}>
+                          {child._familyName}
+                        </span>
+                      )}
+                      <span className="text-caption font-sans text-on-surface-variant">
+                        ← {role}
+                      </span>
+                      <button type="button" onClick={() => removeChildLink(child.id)}
+                              className="text-v-error hover:opacity-70 transition-opacity text-sm">✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        {err && <p className="text-v-error text-caption font-sans px-8 pb-2">{err}</p>}
+        <div className="flex gap-3 px-8 py-5 border-t border-outline-variant flex-shrink-0">
           <button
+            type="button"
             onClick={handleSave}
             disabled={saving}
             className="flex-1 bg-primary text-on-primary text-label-md font-sans py-3 rounded-brand hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
           >
-            {saving ? (
-              <><span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" /> Saving…</>
-            ) : 'Save Links'}
+            {saving
+              ? <><span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" /> Saving…</>
+              : 'Save All Links'}
           </button>
           <button
+            type="button"
             onClick={onClose}
             className="px-5 py-3 border border-outline-variant text-on-surface-variant text-label-md font-sans rounded-brand hover:border-secondary transition-all"
           >
@@ -303,6 +408,16 @@ function PersonCard({
           {person.gotra}
         </span>
       )}
+      {/* Cross-family badge */}
+      {person._crossFamily && (
+        <span
+          className="mt-1 px-2 py-0.5 rounded-full font-sans font-semibold text-center"
+          style={{ fontSize: 9, background: '#d6eaf8', color: '#1e3a5f', border: '1px solid #aed6f1', maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          title={person._familyName}
+        >
+          {person._familyName ?? 'Other family'}
+        </span>
+      )}
     </div>
   )
 }
@@ -363,6 +478,36 @@ function FamilyTreeView({
   const personMap = useMemo(() => new Map(people.map(p => [p.id, p])), [people])
 
   useEffect(() => { setPeople(initialPeople) }, [initialPeople])
+
+  // Load cross-family parents: any fatherId/motherId not in the current people list
+  useEffect(() => {
+    const knownIds = new Set(initialPeople.map(p => p.id))
+    const missing = new Set<string>()
+    for (const p of initialPeople) {
+      if (p.fatherId && !knownIds.has(p.fatherId)) missing.add(p.fatherId)
+      if (p.motherId && !knownIds.has(p.motherId)) missing.add(p.motherId)
+    }
+    if (missing.size === 0) return
+    api.resolvePeople([...missing])
+      .then(resolved => {
+        if (!resolved.length) return
+        // Fetch family names to label them
+        api.getFamilies().then(families => {
+          const famMap = new Map(families.map(f => [f.id, f.name]))
+          const marked = resolved.map(p => ({
+            ...p,
+            _crossFamily: true,
+            _familyName: famMap.get(p.familyId) ?? 'Other family',
+          }))
+          setPeople(prev => {
+            const existingIds = new Set(prev.map(x => x.id))
+            return [...prev, ...marked.filter(p => !existingIds.has(p.id))]
+          })
+        }).catch(() => {})
+      })
+      .catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPeople])
 
   const setRef = useCallback((id: string) => (el: HTMLDivElement | null) => {
     if (el) nodeRefs.current.set(id, el)
@@ -678,15 +823,20 @@ function FamilyTreeView({
         </div>
       )}
 
-      {/* Assign parents modal */}
+      {/* Assign relations modal */}
       {assignTarget && (
-        <AssignParentsModal
+        <AssignRelationsModal
           person={assignTarget}
-          people={people}
+          allPeople={people}
           onClose={() => setAssignTarget(null)}
-          onSaved={(updated) => {
-            setPeople(prev => prev.map(p => p.id === updated.id ? updated : p))
-            setSelected(updated)
+          onSaved={(updates) => {
+            setPeople(prev => {
+              const map = new Map(prev.map(p => [p.id, p]))
+              for (const u of updates) map.set(u.id, u)
+              return [...map.values()]
+            })
+            const me = updates.find(u => u.id === assignTarget.id)
+            if (me) setSelected(me)
             setAssignTarget(null)
           }}
         />

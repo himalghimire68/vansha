@@ -53,6 +53,9 @@ export interface ApiPerson {
   occupation?: string
   createdAt: string
   updatedAt: string
+  // injected client-side for cross-family display
+  _crossFamily?: boolean
+  _familyName?: string
 }
 
 export interface ApiSearchResult {
@@ -92,6 +95,11 @@ export const api = {
     apiFetch<ApiPerson>(`/families/${familyId}/people/${personId}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
+    }),
+  resolvePeople: (ids: string[]) =>
+    apiFetch<ApiPerson[]>('/people/resolve', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
     }),
   findRelationship: (familyId: string, personId1: string, personId2: string) =>
     apiFetch<ApiRelationship>(
