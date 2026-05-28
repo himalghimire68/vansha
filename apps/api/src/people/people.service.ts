@@ -59,6 +59,39 @@ export class PeopleService {
     return saved;
   }
 
+  async updatePerson(personId: string, familyId: string, data: Record<string, unknown>, userId: string): Promise<PersonEntity> {
+    const person = await this.personRepository.findOne({ where: { id: personId, familyId } });
+    if (!person) throw new NotFoundException('Person not found');
+
+    const allowed = ['fatherId', 'motherId', 'biography', 'occupation', 'photoUrl',
+      'birthDate', 'deathDate', 'isLiving', 'gotra', 'caste',
+      'ancestralVillage', 'ancestralDistrict', 'ancestralProvince', 'nepaliName'];
+    for (const key of allowed) {
+      if (key in data) (person as any)[key] = data[key] ?? null;
+    }
+
+    const saved = await this.personRepository.save(person);
+
+    if (data.fatherId) {
+      await this.graphDatabaseService.createFatherRelationship(data.fatherId as string, personId);
+    }
+    if (data.motherId) {
+      await this.graphDatabaseService.createMotherRelationship(data.motherId as string, personId);
+    }
+
+    await this.auditService.log({
+      actorId: userId,
+      action: 'update',
+      resourceType: 'person',
+      resourceId: personId,
+      familyId,
+      newValues: data,
+      status: 'success',
+    });
+
+    return saved;
+  }
+
   async getPerson(personId: string, familyId: string): Promise<PersonEntity> {
     // Try Neo4j first for rich graph data
     const graphResult = await this.graphDatabaseService.getPersonWithFamily(personId);

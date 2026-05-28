@@ -8,9 +8,9 @@ import { cn } from '@/utils'
 const NAV_ITEMS = [
   { href: '/dashboard',             label: 'Ancestry Tree',    icon: '🌳' },
   { href: '/explore-relationships', label: 'Explore Relations', icon: '🔍' },
-  { href: '#',                      label: 'Family Stories',   icon: '📖' },
-  { href: '#',                      label: 'Document Archive', icon: '📦' },
-  { href: '#',                      label: 'Life Events',      icon: '📅' },
+  { href: '/family-stories',        label: 'Family Stories',   icon: '📖' },
+  { href: '/document-archive',      label: 'Document Archive', icon: '📦' },
+  { href: '/life-events',           label: 'Life Events',      icon: '📅' },
 ]
 
 interface DashboardLayoutProps {
@@ -39,7 +39,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             const active = pathname === item.href
             return (
               <Link
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-150 text-label-md font-sans',
@@ -122,7 +122,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="md:hidden bg-surface-container-low border-b border-outline-variant px-4 py-3 space-y-1">
             {NAV_ITEMS.map((item) => (
               <Link
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high text-label-md font-sans"
@@ -153,11 +153,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Mobile Bottom Nav */}
       <nav className="fixed bottom-0 left-0 w-full z-50 md:hidden flex justify-around items-center px-4 py-3 pb-safe bg-surface border-t border-outline-variant">
         {[
-          { href: '/dashboard', icon: '🏠', label: 'Home' },
-          { href: '#', icon: '🌳', label: 'Tree' },
-          { href: '/new-tree', icon: '＋', label: 'New' },
+          { href: '/dashboard',             icon: '🏠', label: 'Home'    },
+          { href: '/family-stories',        icon: '📖', label: 'Stories' },
+          { href: '/new-tree',              icon: '＋', label: 'New'     },
           { href: '/explore-relationships', icon: '🔍', label: 'Explore' },
-          { href: '#', icon: '👤', label: 'Profile' },
+          { href: '/life-events',           icon: '📅', label: 'Events'  },
         ].map((item) => {
           const active = pathname === item.href
           return (

@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Patch,
   Get,
   Body,
   Param,
@@ -44,6 +45,19 @@ export class PeopleController {
   @ApiOperation({ summary: 'Get person by ID' })
   async getById(@Param('familyId') familyId: string, @Param('id') personId: string) {
     return this.peopleService.getPerson(personId, familyId);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update person fields (fatherId, motherId, bio, etc.)' })
+  async update(
+    @Param('familyId') familyId: string,
+    @Param('id') personId: string,
+    @Body() data: Record<string, unknown>,
+    @Req() req: any,
+  ) {
+    const userId = req.user?.userId || req.headers['x-user-id'];
+    if (!userId) throw new BadRequestException('User ID is required');
+    return this.peopleService.updatePerson(personId, familyId, data, userId);
   }
 
   @Get(':id/ancestors')

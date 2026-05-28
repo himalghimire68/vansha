@@ -9,61 +9,69 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Heritage Design System — Vansha Lineage
-        'primary':                    '#181512',
+        // Vansha — Forest & Ocean palette with Golden accents
+        'primary':                    '#1b4332',   // Deep Forest Green
         'on-primary':                 '#ffffff',
-        'primary-container':          '#2d2926',
-        'on-primary-container':       '#96908b',
-        'primary-fixed':              '#e9e1dc',
-        'primary-fixed-dim':          '#cdc5c0',
-        'on-primary-fixed':           '#1e1b18',
-        'on-primary-fixed-variant':   '#4b4642',
-        'inverse-primary':            '#cdc5c0',
+        'primary-container':          '#40916c',   // Sage Green
+        'on-primary-container':       '#f0fdf4',
+        'primary-fixed':              '#d8f3dc',   // Mint
+        'primary-fixed-dim':          '#b7e4c7',
+        'on-primary-fixed':           '#0d2818',
+        'on-primary-fixed-variant':   '#2d6a4f',
+        'inverse-primary':            '#74c69d',
 
-        'secondary':                  '#506354',
+        'secondary':                  '#1e3a5f',   // Deep Ocean Blue
         'on-secondary':               '#ffffff',
-        'secondary-container':        '#cfe5d3',
-        'on-secondary-container':     '#546759',
-        'secondary-fixed':            '#d2e8d6',
-        'secondary-fixed-dim':        '#b6ccba',
-        'on-secondary-fixed':         '#0d1f14',
-        'on-secondary-fixed-variant': '#384b3e',
+        'secondary-container':        '#2e86c1',   // Sky Blue
+        'on-secondary-container':     '#eaf4fc',
+        'secondary-fixed':            '#d6eaf8',   // Light Blue
+        'secondary-fixed-dim':        '#aed6f1',
+        'on-secondary-fixed':         '#0a1e38',
+        'on-secondary-fixed-variant': '#1a4f7a',
 
-        'tertiary':                   '#280e00',
+        'tertiary':                   '#92400e',   // Amber/Gold
         'on-tertiary':                '#ffffff',
-        'tertiary-container':         '#42210a',
-        'on-tertiary-container':      '#b78668',
-        'tertiary-fixed':             '#ffdbc8',
-        'tertiary-fixed-dim':         '#f2bb9a',
-        'on-tertiary-fixed':          '#301401',
-        'on-tertiary-fixed-variant':  '#643e25',
+        'tertiary-container':         '#d97706',   // Golden Amber
+        'on-tertiary-container':      '#fff8e7',
+        'tertiary-fixed':             '#fef3c7',   // Soft Yellow
+        'tertiary-fixed-dim':         '#fde68a',
+        'on-tertiary-fixed':          '#3d2000',
+        'on-tertiary-fixed-variant':  '#7c3a0e',
 
-        'surface':                    '#fbf9f7',
-        'surface-dim':                '#dbdad8',
-        'surface-bright':             '#fbf9f7',
+        'surface':                    '#f8fffb',
+        'surface-dim':                '#c3e2cc',
+        'surface-bright':             '#f8fffb',
         'surface-container-lowest':   '#ffffff',
-        'surface-container-low':      '#f5f3f1',
-        'surface-container':          '#efedec',
-        'surface-container-high':     '#eae8e6',
-        'surface-container-highest':  '#e4e2e0',
-        'surface-variant':            '#e4e2e0',
-        'surface-tint':               '#635d5a',
+        'surface-container-low':      '#eef7f2',
+        'surface-container':          '#e3f0e8',
+        'surface-container-high':     '#d4e8da',
+        'surface-container-highest':  '#c5e0cd',
+        'surface-variant':            '#daeee2',
+        'surface-tint':               '#2d6a4f',
 
-        'on-surface':                 '#1b1c1b',
-        'on-surface-variant':         '#4d4540',
-        'inverse-surface':            '#30302f',
-        'inverse-on-surface':         '#f2f0ee',
+        'on-surface':                 '#0d2218',
+        'on-surface-variant':         '#3a5443',
+        'inverse-surface':            '#1a2e22',
+        'inverse-on-surface':         '#eef7f2',
 
-        'outline':                    '#7e756f',
-        'outline-variant':            '#cfc4bd',
+        'outline':                    '#587862',
+        'outline-variant':            '#b0cdb8',
 
-        'v-error':                    '#ba1a1a',
+        'v-error':                    '#dc2626',
         'on-error':                   '#ffffff',
-        'error-container':            '#ffdad6',
-        'on-error-container':         '#93000a',
+        'error-container':            '#fee2e2',
+        'on-error-container':         '#7f1d1d',
 
-        'background':                 '#fbf9f7',
-        'on-background':              '#1b1c1b',
+        'background':                 '#f0fdf4',   // Green-50
+        'on-background':              '#0d2218',
+
+        // Generation palette for tree visualization
+        'gen-0':  '#1b4332',   // deep green
+        'gen-1':  '#1e3a5f',   // deep blue
+        'gen-2':  '#0f766e',   // teal
+        'gen-3':  '#92400e',   // amber
+        'gen-4':  '#4a1d96',   // purple
+        'gen-5':  '#065f46',   // emerald
       },
       fontFamily: {
         'serif':   ['"Libre Caslon Text"', 'Georgia', 'serif'],
@@ -81,9 +89,9 @@ const config: Config = {
         'caption':           ['12px', { lineHeight: '16px', fontWeight: '400' }],
       },
       boxShadow: {
-        'archival':    '0 4px 20px rgba(45, 41, 38, 0.05)',
-        'archival-lg': '0 12px 40px rgba(45, 41, 38, 0.08)',
-        'archival-xl': '0 20px 60px rgba(45, 41, 38, 0.12)',
+        'archival':    '0 4px 20px rgba(27, 67, 50, 0.08)',
+        'archival-lg': '0 12px 40px rgba(27, 67, 50, 0.12)',
+        'archival-xl': '0 20px 60px rgba(27, 67, 50, 0.16)',
       },
       animation: {
         'fade-in':    'fadeIn 0.4s ease-out',

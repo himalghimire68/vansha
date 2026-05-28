@@ -88,6 +88,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  updatePerson: (familyId: string, personId: string, data: Record<string, unknown>) =>
+    apiFetch<ApiPerson>(`/families/${familyId}/people/${personId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
   findRelationship: (familyId: string, personId1: string, personId2: string) =>
     apiFetch<ApiRelationship>(
       `/families/${familyId}/people/${personId1}/relationship/${personId2}`,

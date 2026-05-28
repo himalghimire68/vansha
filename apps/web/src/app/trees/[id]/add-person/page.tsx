@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import DashboardLayout from '@/app/dashboard-layout'
-import { api } from '@/lib/api'
+import { api, ApiPerson } from '@/lib/api'
 
 const NEPAL_PROVINCES = [
   'Koshi', 'Madhesh', 'Bagmati', 'Gandaki', 'Lumbini', 'Karnali', 'Sudurpashchim',
@@ -17,6 +17,13 @@ export default function AddPersonPage() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [existingPeople, setExistingPeople] = useState<ApiPerson[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (treeId) api.getPeople(treeId).then(setExistingPeople).catch(() => {})
+  }, [treeId])
 
   const [form, setForm] = useState({
     firstName: '',
@@ -33,7 +40,32 @@ export default function AddPersonPage() {
     ancestralDistrict: '',
     ancestralProvince: '',
     biography: '',
+    photoUrl: '',
+    fatherId: '',
+    motherId: '',
   })
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Photo must be smaller than 5 MB.')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string
+      setPhotoPreview(dataUrl)
+      setForm((prev) => ({ ...prev, photoUrl: dataUrl }))
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removePhoto = () => {
+    setPhotoPreview(null)
+    setForm((prev) => ({ ...prev, photoUrl: '' }))
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm((prev) => ({ ...prev, [key]: e.target.value }))
@@ -54,6 +86,9 @@ export default function AddPersonPage() {
         isLiving: form.isLiving,
         birthDate: form.birthDate || undefined,
         deathDate: form.deathDate || undefined,
+        photoUrl: form.photoUrl || undefined,
+        fatherId: form.fatherId || undefined,
+        motherId: form.motherId || undefined,
       }
       await api.createPerson(treeId, payload)
       router.push(`/trees/${treeId}`)
@@ -87,6 +122,50 @@ export default function AddPersonPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Photo Upload */}
+            <div className="flex flex-col items-center gap-4">
+              <div
+                className="relative w-28 h-28 rounded-full border-2 border-dashed border-outline-variant hover:border-secondary transition-colors cursor-pointer overflow-hidden bg-surface-container"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {photoPreview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-on-surface-variant">
+                    <span className="text-3xl">📷</span>
+                    <span className="text-[10px] font-sans font-semibold uppercase tracking-wide">Add Photo</span>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-label-md font-sans text-secondary hover:underline transition-colors"
+                >
+                  {photoPreview ? 'Change Photo' : 'Upload Photo'}
+                </button>
+                {photoPreview && (
+                  <button
+                    type="button"
+                    onClick={removePhoto}
+                    className="text-label-md font-sans text-v-error hover:underline transition-colors"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <p className="text-caption font-sans text-on-surface-variant/60">JPG, PNG or WEBP · max 5 MB</p>
+            </div>
+
             {/* Name */}
             <fieldset className="space-y-5">
               <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Full Name</legend>
@@ -261,6 +340,54 @@ export default function AddPersonPage() {
                 </div>
               </div>
             </fieldset>
+
+            {/* Parent Links */}
+            {existingPeople.length > 0 && (
+              <fieldset className="space-y-5">
+                <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Link Parents</legend>
+                <p className="text-caption font-sans text-on-surface-variant -mt-2">
+                  Optional — connect this person to existing members of the tree.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">Father</label>
+                    <select
+                      value={form.fatherId}
+                      onChange={set('fatherId')}
+                      className="w-full bg-transparent border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary transition-colors"
+                    >
+                      <option value="">— None —</option>
+                      {existingPeople
+                        .filter(p => p.gender === 'male' || p.gender === 'other')
+                        .map(p => (
+                          <option key={p.id} value={p.id}>
+                            {p.firstName} {p.lastName}
+                            {p.birthDate ? ` (b. ${new Date(p.birthDate).getFullYear()})` : ''}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">Mother</label>
+                    <select
+                      value={form.motherId}
+                      onChange={set('motherId')}
+                      className="w-full bg-transparent border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary transition-colors"
+                    >
+                      <option value="">— None —</option>
+                      {existingPeople
+                        .filter(p => p.gender === 'female' || p.gender === 'other')
+                        .map(p => (
+                          <option key={p.id} value={p.id}>
+                            {p.firstName} {p.lastName}
+                            {p.birthDate ? ` (b. ${new Date(p.birthDate).getFullYear()})` : ''}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+              </fieldset>
+            )}
 
             {/* Biography */}
             <div className="space-y-2">
