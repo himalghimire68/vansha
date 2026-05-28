@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import DashboardLayout from '@/app/dashboard-layout'
@@ -316,8 +316,8 @@ function FamilyTreeView({
   const [relationship, setRelationship] = useState<string | null>(null)
   const [people, setPeople] = useState<ApiPerson[]>(initialPeople)
   const [assignTarget, setAssignTarget] = useState<ApiPerson | null>(null)
-  const rows = buildGenerations(people)
-  const personMap = new Map(people.map(p => [p.id, p]))
+  const rows = useMemo(() => buildGenerations(people), [people])
+  const personMap = useMemo(() => new Map(people.map(p => [p.id, p])), [people])
 
   useEffect(() => { setPeople(initialPeople) }, [initialPeople])
 
@@ -360,7 +360,8 @@ function FamilyTreeView({
 
     setSvgSize({ w: rect.width, h: rect.height })
     setLines(newLines)
-  }, [people, rows])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [people])
 
   const handleSelect = (p: ApiPerson) => {
     if (selected && selected.id !== p.id) {
@@ -732,7 +733,7 @@ export default function TreePage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-serif text-headline-md text-primary">Family Lineage Tree</h2>
                 <span className="text-caption font-sans text-on-surface-variant">
-                  {buildGenerations(people).length} generation{buildGenerations(people).length !== 1 ? 's' : ''}
+                  {(() => { const n = buildGenerations(people).length; return `${n} generation${n !== 1 ? 's' : ''}` })()}
                 </span>
               </div>
               <FamilyTreeView people={people} treeId={treeId} />
