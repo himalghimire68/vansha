@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import DashboardLayout from '@/app/dashboard-layout'
 import { api, ApiPerson } from '@/lib/api'
+import { GotraSelect, SurnameSelect } from '@/components/GotraSelect'
 
 const NEPAL_PROVINCES = [
   'Koshi', 'Madhesh', 'Bagmati', 'Gandaki', 'Lumbini', 'Karnali', 'Sudurpashchim',
@@ -195,17 +196,17 @@ export default function AddPersonPage() {
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Last Name *</label>
-                  <input
-                    type="text"
+                <div>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">
+                    Last Name *
+                    {form.gotra && <span className="ml-2 text-[10px] text-tertiary-container opacity-80">suggestions from {form.gotra} gotra</span>}
+                  </label>
+                  <SurnameSelect
                     value={form.lastName}
-                    onChange={set('lastName')}
+                    gotra={form.gotra}
+                    onChange={(s) => setForm(prev => ({ ...prev, lastName: s }))}
                     placeholder="e.g. Ghimire"
-                    required
-                    className={inputClass}
                   />
-                  <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
                 <div className="relative group">
                   <label className="text-caption font-sans text-on-surface-variant mb-1 block">Nepali Name</label>
@@ -279,18 +280,14 @@ export default function AddPersonPage() {
             <fieldset className="space-y-5">
               <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Lineage & Heritage</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="relative group">
+                <div>
                   <label className="text-caption font-sans text-on-surface-variant mb-1 block">Gotra</label>
-                  <input
-                    type="text"
+                  <GotraSelect
                     value={form.gotra}
-                    onChange={set('gotra')}
-                    placeholder="e.g. Kashyap"
-                    className={inputClass}
+                    onChange={(g) => setForm(prev => ({ ...prev, gotra: g }))}
                   />
-                  <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
-                <div className="relative group">
+                <div>
                   <label className="text-caption font-sans text-on-surface-variant mb-1 block">Caste / Community</label>
                   <input
                     type="text"
@@ -299,7 +296,6 @@ export default function AddPersonPage() {
                     placeholder="e.g. Brahmin"
                     className={inputClass}
                   />
-                  <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">

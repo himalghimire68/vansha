@@ -128,7 +128,7 @@ const GEN_PALETTE = [
 ]
 const genColor = (i: number) => GEN_PALETTE[i % GEN_PALETTE.length]
 
-// ─── Build generation rows via BFS ────────────────────────────────────────
+// ─── Build generation rows ────────────────────────────────────────────────
 interface GenRow { gen: number; people: ApiPerson[] }
 
 function buildGenerations(people: ApiPerson[]): GenRow[] {
@@ -136,32 +136,75 @@ function buildGenerations(people: ApiPerson[]): GenRow[] {
   const map = new Map(people.map(p => [p.id, p]))
   const genMap = new Map<string, number>()
 
-  const roots = people.filter(
-    p => (!p.fatherId || !map.has(p.fatherId)) && (!p.motherId || !map.has(p.motherId))
-  )
-  const starts = roots.length > 0 ? roots : [people[0]]
-  const queue: { id: string; gen: number }[] = starts.map(p => ({ id: p.id, gen: 0 }))
-
-  while (queue.length > 0) {
-    const { id, gen } = queue.shift()!
-    if (genMap.has(id)) continue
-    genMap.set(id, gen)
-    for (const p of people) {
-      if (!genMap.has(p.id) && (p.fatherId === id || p.motherId === id)) {
-        queue.push({ id: p.id, gen: gen + 1 })
-      }
+  // Phase 1 — roots (no known parent in this set) get gen 0; BFS downward
+  // A child's gen = max(known parents' gens) + 1
+  for (const p of people) {
+    if ((!p.fatherId || !map.has(p.fatherId)) && (!p.motherId || !map.has(p.motherId))) {
+      genMap.set(p.id, 0)
     }
   }
+
+  let changed = true
+  let guard = 0
+  while (changed && guard++ < 50) {
+    changed = false
+    for (const p of people) {
+      let maxParentGen = -1
+      if (p.fatherId && map.has(p.fatherId) && genMap.has(p.fatherId))
+        maxParentGen = Math.max(maxParentGen, genMap.get(p.fatherId)!)
+      if (p.motherId && map.has(p.motherId) && genMap.has(p.motherId))
+        maxParentGen = Math.max(maxParentGen, genMap.get(p.motherId)!)
+      if (maxParentGen < 0) continue
+      const want = maxParentGen + 1
+      if ((genMap.get(p.id) ?? -1) < want) { genMap.set(p.id, want); changed = true }
+    }
+  }
+
+  // Phase 2 — co-parent alignment:
+  // If A and B are both parents of child C and A.gen !== B.gen, raise the lower one.
+  // Then re-push children downward until stable.
+  changed = true; guard = 0
+  while (changed && guard++ < 30) {
+    changed = false
+    for (const child of people) {
+      const childGen = genMap.get(child.id)
+      if (childGen == null) continue
+      const expectedParentGen = childGen - 1
+      for (const pid of [child.fatherId, child.motherId]) {
+        if (!pid || !map.has(pid)) continue
+        const current = genMap.get(pid) ?? 0
+        if (current < expectedParentGen) {
+          genMap.set(pid, expectedParentGen)
+          changed = true
+        }
+      }
+    }
+    // Re-propagate downward after parent gens changed
+    for (const p of people) {
+      let maxParentGen = -1
+      if (p.fatherId && map.has(p.fatherId) && genMap.has(p.fatherId))
+        maxParentGen = Math.max(maxParentGen, genMap.get(p.fatherId)!)
+      if (p.motherId && map.has(p.motherId) && genMap.has(p.motherId))
+        maxParentGen = Math.max(maxParentGen, genMap.get(p.motherId)!)
+      if (maxParentGen < 0) continue
+      const want = maxParentGen + 1
+      if ((genMap.get(p.id) ?? -1) < want) { genMap.set(p.id, want); changed = true }
+    }
+  }
+
+  // Phase 3 — any still-unassigned people (isolated) get gen 0
   for (const p of people) { if (!genMap.has(p.id)) genMap.set(p.id, 0) }
+
+  // Normalise so minimum gen == 0
+  const minGen = Math.min(...Array.from(genMap.values()))
+  if (minGen !== 0) { for (const [id] of genMap) genMap.set(id, genMap.get(id)! - minGen) }
 
   const maxGen = Math.max(0, ...Array.from(genMap.values()))
   const rows: GenRow[] = []
   for (let i = 0; i <= maxGen; i++) {
     const row = people
       .filter(p => genMap.get(p.id) === i)
-      .sort((a, b) =>
-        `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`)
-      )
+      .sort((a, b) => `${a.lastName}${a.firstName}`.localeCompare(`${b.lastName}${b.firstName}`))
     if (row.length) rows.push({ gen: i, people: row })
   }
   return rows
