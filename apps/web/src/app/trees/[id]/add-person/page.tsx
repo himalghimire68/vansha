@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import DashboardLayout from '@/app/dashboard-layout'
 import { api, ApiPerson } from '@/lib/api'
-import { GotraSelect, SurnameSelect } from '@/components/GotraSelect'
+import { GotraSelect, SurnameSelect, CasteSelect } from '@/components/GotraSelect'
 
 const NEPAL_PROVINCES = [
   'Koshi', 'Madhesh', 'Bagmati', 'Gandaki', 'Lumbini', 'Karnali', 'Sudurpashchim',
@@ -281,20 +281,28 @@ export default function AddPersonPage() {
               <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Lineage & Heritage</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Gotra</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">
+                    Gotra
+                    <span className="ml-2 text-[10px] text-on-surface-variant/50">auto-fills from Surname/Caste</span>
+                  </label>
                   <GotraSelect
                     value={form.gotra}
                     onChange={(g) => setForm(prev => ({ ...prev, gotra: g }))}
                   />
                 </div>
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Caste / Community</label>
-                  <input
-                    type="text"
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">
+                    Surname / Caste
+                    {form.gotra && (
+                      <span className="ml-2 text-[10px] text-tertiary-container opacity-80">
+                        gotra will auto-fill on selection
+                      </span>
+                    )}
+                  </label>
+                  <CasteSelect
                     value={form.caste}
-                    onChange={set('caste')}
-                    placeholder="e.g. Brahmin"
-                    className={inputClass}
+                    onChangeValue={(v) => setForm(prev => ({ ...prev, caste: v }))}
+                    onGotraDetected={(g) => setForm(prev => ({ ...prev, gotra: g }))}
                   />
                 </div>
               </div>
