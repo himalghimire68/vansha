@@ -85,39 +85,42 @@ function buildGenMap(people: ApiPerson[]): Map<string, number> {
   return genMap
 }
 
-// ── Pedigree filter: only show ego's direct lineage ──────────────────────────
-// Ancestors (unlimited up), ego's own gen (siblings), direct children + grandchildren
+// ── Pedigree filter ───────────────────────────────────────────────────────────
+// Shows: ego, all ancestors (unlimited up), ALL children of each ancestor
+// (= ego's siblings + ego's uncles/aunts at every level), ego's children + grandchildren
 function getPedigreeIds(egoId: string, peopleMap: Map<string, ApiPerson>): Set<string> {
   const result = new Set<string>()
   result.add(egoId)
 
-  const ego = peopleMap.get(egoId)
-  if (!ego) return result
+  if (!peopleMap.has(egoId)) return result
 
-  // Walk ancestors (BFS upward)
-  const ancestorQueue: string[] = [egoId]
-  while (ancestorQueue.length > 0) {
-    const id = ancestorQueue.shift()!
+  // BFS upward — collect all ancestors into result
+  const queue: string[] = [egoId]
+  while (queue.length > 0) {
+    const id = queue.shift()!
     const p = peopleMap.get(id)
     if (!p) continue
     for (const pid of [p.fatherId, p.motherId]) {
       if (pid && peopleMap.has(pid) && !result.has(pid)) {
         result.add(pid)
-        ancestorQueue.push(pid)
+        queue.push(pid)
       }
     }
   }
 
-  // Include siblings (share at least one parent with ego)
+  // Snapshot of ego + ancestors before adding their children
+  const ancestorSet = new Set(result)
+
+  // Include ALL children of every ancestor (siblings of ego, uncles, great-uncles, etc.)
   for (const p of peopleMap.values()) {
-    if (p.id === egoId) continue
-    const sharesFather = ego.fatherId && p.fatherId === ego.fatherId
-    const sharesMother = ego.motherId && p.motherId === ego.motherId
-    if (sharesFather || sharesMother) result.add(p.id)
+    if (result.has(p.id)) continue
+    if ((p.fatherId && ancestorSet.has(p.fatherId)) ||
+        (p.motherId && ancestorSet.has(p.motherId))) {
+      result.add(p.id)
+    }
   }
 
-  // Include children (people whose fatherId or motherId === egoId)
-  // and grandchildren
+  // Include ego's children and grandchildren
   const childGen: string[] = []
   for (const p of peopleMap.values()) {
     if (p.fatherId === egoId || p.motherId === egoId) { result.add(p.id); childGen.push(p.id) }

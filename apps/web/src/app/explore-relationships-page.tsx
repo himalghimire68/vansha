@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
-import { api, ApiSearchResult, ApiRelationship } from '@/lib/api'
+import React, { useState, useEffect } from 'react'
+import { api, ApiPerson, ApiRelationship } from '@/lib/api'
 
 interface Person {
   id: string
@@ -17,10 +16,6 @@ interface RelResult {
   distance: number
 }
 
-function searchResultToPerson(r: ApiSearchResult): Person {
-  return { id: r.id, name: `${r.firstName} ${r.lastName}`, familyId: r.familyId }
-}
-
 function describeRelationship(rel: ApiRelationship): string {
   if (rel.type === 'SELF') return 'Same Person'
   if (rel.type === 'PARENT_CHILD') return rel.description || 'Parent / Child'
@@ -32,42 +27,51 @@ function describeRelationship(rel: ApiRelationship): string {
   return rel.description || rel.type
 }
 
+function toEntry(p: ApiPerson): Person {
+  const name = [p.firstName, p.middleName, p.lastName].filter(Boolean).join(' ')
+  return { id: p.id, name, familyId: p.familyId }
+}
+
 export default function ExploreRelationshipsPage() {
-  const [familyId, setFamilyId] = useState<string | null>(null)
+  const [allPeople, setAllPeople] = useState<Person[]>([])
   const [person1, setPerson1] = useState<Person | null>(null)
   const [person2, setPerson2] = useState<Person | null>(null)
   const [search1, setSearch1] = useState('')
   const [search2, setSearch2] = useState('')
-  const [sug1, setSug1] = useState<Person[]>([])
-  const [sug2, setSug2] = useState<Person[]>([])
   const [show1, setShow1] = useState(false)
   const [show2, setShow2] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<RelResult | null>(null)
   const [error, setError] = useState('')
-  const t1 = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const t2 = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    api.getFamilies().then((fs) => { if (fs.length > 0) setFamilyId(fs[0].id) }).catch(() => {})
+    const load = async () => {
+      try {
+        const families = await api.getFamilies()
+        const batches = await Promise.all(
+          families.map(f => api.getPeople(f.id).catch(() => [] as ApiPerson[]))
+        )
+        setAllPeople(batches.flat().map(toEntry))
+      } catch {}
+    }
+    load()
   }, [])
 
-  const doSearch = async (q: string, setter: (p: Person[]) => void) => {
-    if (!familyId || !q.trim()) { setter([]); return }
-    try {
-      const r = await api.searchPeople(familyId, q)
-      setter(r.map(searchResultToPerson))
-    } catch { setter([]) }
-  }
+  const filter = (q: string) =>
+    q.trim()
+      ? allPeople.filter(p => p.name.toLowerCase().includes(q.toLowerCase())).slice(0, 10)
+      : []
+
+  const sug1 = filter(search1)
+  const sug2 = filter(search2)
 
   const handleExplore = async () => {
     if (!person1 || !person2) { setError('Please select both people.'); return }
     if (person1.id === person2.id) { setError('Please select two different people.'); return }
-    if (!familyId) { setError('No family context found.'); return }
     setError('')
     setIsLoading(true)
     try {
-      const rel = await api.findRelationship(familyId, person1.id, person2.id)
+      const rel = await api.findRelationship(person1.familyId, person1.id, person2.id)
       setResult({ person1, person2, relationship: describeRelationship(rel), distance: rel.distance ?? 0 })
     } catch {
       setError('Failed to find relationship. Please try again.')
@@ -99,12 +103,7 @@ export default function ExploreRelationshipsPage() {
               <input
                 type="text"
                 value={search1}
-                onChange={(e) => {
-                  setSearch1(e.target.value)
-                  setShow1(true)
-                  if (t1.current) clearTimeout(t1.current)
-                  t1.current = setTimeout(() => doSearch(e.target.value, setSug1), 300)
-                }}
+                onChange={(e) => { setSearch1(e.target.value); setShow1(true) }}
                 onFocus={() => setShow1(true)}
                 placeholder="Search family members..."
                 className="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none transition-all placeholder:text-outline"
@@ -141,12 +140,7 @@ export default function ExploreRelationshipsPage() {
               <input
                 type="text"
                 value={search2}
-                onChange={(e) => {
-                  setSearch2(e.target.value)
-                  setShow2(true)
-                  if (t2.current) clearTimeout(t2.current)
-                  t2.current = setTimeout(() => doSearch(e.target.value, setSug2), 300)
-                }}
+                onChange={(e) => { setSearch2(e.target.value); setShow2(true) }}
                 onFocus={() => setShow2(true)}
                 placeholder="Search family members..."
                 className="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none transition-all placeholder:text-outline"

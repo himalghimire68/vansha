@@ -268,11 +268,15 @@ function FamilyTreeView({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPeople])
 
-  // Load cross-family parents referenced by fatherId/motherId
+  // Load cross-family parents referenced by fatherId/motherId.
+  // Depends on `people` (local state) so it also fires after the AssignRelationsModal
+  // saves a new cross-family parent link, not just on initial prop load.
+  // Only scans non-cross-family people to avoid infinite chaining.
   useEffect(() => {
-    const knownIds = new Set(initialPeople.map(p => p.id))
+    const knownIds = new Set(people.map(p => p.id))
     const missing = new Set<string>()
-    for (const p of initialPeople) {
+    for (const p of people) {
+      if (p._crossFamily) continue   // don't chain into grandparents of external nodes
       if (p.fatherId && !knownIds.has(p.fatherId)) missing.add(p.fatherId)
       if (p.motherId && !knownIds.has(p.motherId)) missing.add(p.motherId)
     }
@@ -289,13 +293,15 @@ function FamilyTreeView({
           }))
           setPeople(prev => {
             const existingIds = new Set(prev.map(x => x.id))
-            return [...prev, ...marked.filter(p => !existingIds.has(p.id))]
+            const toAdd = marked.filter(p => !existingIds.has(p.id))
+            if (toAdd.length === 0) return prev   // no change → no re-render
+            return [...prev, ...toAdd]
           })
         }).catch(() => {})
       })
       .catch(() => {})
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialPeople])
+  }, [people])
 
   const mePerson = people.find(p => p.id === mePersonId)
 

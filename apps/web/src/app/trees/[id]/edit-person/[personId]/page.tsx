@@ -111,6 +111,7 @@ export default function EditPersonPage() {
         occupation: form.occupation || undefined,
         birthOrder: form.birthOrder ? Number(form.birthOrder) : undefined,
       })
+      router.refresh()
       router.push(`/trees/${treeId}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save. Please try again.')
