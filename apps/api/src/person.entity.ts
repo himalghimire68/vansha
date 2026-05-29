@@ -80,6 +80,12 @@ export class PersonEntity {
   @Column({ default: 'Nepal' })
   ancestralCountry!: string;
 
+  @Column({ nullable: true })
+  occupation!: string;
+
+  @Column({ type: 'int', nullable: true })
+  birthOrder!: number;
+
   // Relationship links (stored as UUIDs)
   @Column({ nullable: true })
   fatherId!: string;

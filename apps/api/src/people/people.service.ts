@@ -65,7 +65,8 @@ export class PeopleService {
 
     const allowed = ['fatherId', 'motherId', 'biography', 'occupation', 'photoUrl',
       'birthDate', 'deathDate', 'isLiving', 'gotra', 'caste',
-      'ancestralVillage', 'ancestralDistrict', 'ancestralProvince', 'nepaliName'];
+      'ancestralVillage', 'ancestralDistrict', 'ancestralProvince', 'nepaliName',
+      'birthOrder', 'firstName', 'middleName', 'lastName'];
     for (const key of allowed) {
       if (key in data) (person as any)[key] = data[key] ?? null;
     }

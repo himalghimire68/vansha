@@ -51,6 +51,7 @@ export interface ApiPerson {
   motherId?: string
   photoUrl?: string
   occupation?: string
+  birthOrder?: number
   createdAt: string
   updatedAt: string
   // injected client-side for cross-family display

@@ -41,9 +41,11 @@ export default function AddPersonPage() {
     ancestralDistrict: '',
     ancestralProvince: '',
     biography: '',
+    occupation: '',
     photoUrl: '',
     fatherId: '',
     motherId: '',
+    birthOrder: '',
   })
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,6 +92,7 @@ export default function AddPersonPage() {
         photoUrl: form.photoUrl || undefined,
         fatherId: form.fatherId || undefined,
         motherId: form.motherId || undefined,
+        birthOrder: form.birthOrder ? Number(form.birthOrder) : undefined,
       }
       await api.createPerson(treeId, payload)
       router.push(`/trees/${treeId}`)
@@ -273,6 +276,20 @@ export default function AddPersonPage() {
                     <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                   </div>
                 )}
+              </div>
+              {/* Birth order */}
+              <div className="relative group" style={{ maxWidth: 180 }}>
+                <label className="text-caption font-sans text-on-surface-variant mb-1 block">
+                  Birth Order <span className="opacity-50">(1 = eldest)</span>
+                </label>
+                <input
+                  type="number" min="1" max="20"
+                  value={form.birthOrder}
+                  onChange={set('birthOrder')}
+                  placeholder="e.g. 1"
+                  className={inputClass}
+                />
+                <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
               </div>
             </fieldset>
 
