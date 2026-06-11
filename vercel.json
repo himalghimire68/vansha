@@ -1,5 +1,13 @@
 {
   "buildCommand": "cd apps/web && npx next build",
   "outputDirectory": "apps/web/.next",
-  "installCommand": "yarn install"
+  "installCommand": "yarn install",
+  "experimentalServices": {
+    "api": {
+      "root": "apps/api",
+      "entrypoint": "src/main.ts",
+      "routePrefix": "/",
+      "buildCommand": "yarn install && yarn workspace @vansha/shared-types build || true && yarn workspace @vansha/api build"
+    }
+  }
 }
