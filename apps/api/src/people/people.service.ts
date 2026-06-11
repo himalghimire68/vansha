@@ -1,16 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreatePersonRequest } from '@vansha/shared-types';
 import { GraphDatabaseService } from '../common/services/graph-database.service';
 import { AuditService } from '../common/services/audit.service';
 import { PersonEntity } from '../person.entity';
+import { CrossFamilyLinkEntity } from '../cross-family-link.entity';
 
 @Injectable()
 export class PeopleService {
   constructor(
     @InjectRepository(PersonEntity)
     private personRepository: Repository<PersonEntity>,
+    @InjectRepository(CrossFamilyLinkEntity)
+    private crossFamilyRepository: Repository<CrossFamilyLinkEntity>,
     private graphDatabaseService: GraphDatabaseService,
     private auditService: AuditService,
   ) {}
@@ -29,7 +32,6 @@ export class PeopleService {
 
     const saved = await this.personRepository.save(person);
 
-    // Mirror to Neo4j (best-effort — silently skipped when Neo4j unavailable)
     await this.graphDatabaseService.createPerson({
       id: saved.id,
       familyId,
@@ -94,11 +96,9 @@ export class PeopleService {
   }
 
   async getPerson(personId: string, familyId: string): Promise<PersonEntity> {
-    // Try Neo4j first for rich graph data
     const graphResult = await this.graphDatabaseService.getPersonWithFamily(personId);
     if (graphResult) return graphResult;
 
-    // Fall back to SQL
     const person = await this.personRepository.findOne({ where: { id: personId, familyId } });
     if (!person) throw new NotFoundException('Person not found');
     return person;
@@ -112,20 +112,14 @@ export class PeopleService {
   }
 
   async getAncestors(personId: string, generations = 3): Promise<PersonEntity[]> {
-    // Try Neo4j first
     const graphResult = await this.graphDatabaseService.findAncestors(personId, generations);
     if (graphResult.length > 0) return graphResult;
-
-    // SQL-based recursive ancestor traversal via fatherId/motherId columns
     return this.sqlAncestors(personId, generations);
   }
 
   async getDescendants(personId: string, generations = 3): Promise<PersonEntity[]> {
-    // Try Neo4j first
     const graphResult = await this.graphDatabaseService.findDescendants(personId, generations);
     if (graphResult.length > 0) return graphResult;
-
-    // SQL-based recursive descendant traversal
     return this.sqlDescendants(personId, generations);
   }
 
@@ -145,7 +139,6 @@ export class PeopleService {
       };
     }
 
-    // SQL fallback: check direct parent-child
     const p1 = await this.personRepository.findOne({ where: { id: personId1 } });
     const p2 = await this.personRepository.findOne({ where: { id: personId2 } });
     if (!p1 || !p2) return { type: 'UNKNOWN', description: 'One or both people not found' };
@@ -160,7 +153,38 @@ export class PeopleService {
     return { type: 'NO_DIRECT_LINK', description: 'No direct relationship found in available data' };
   }
 
-  // SQL-based ancestor traversal (up to `depth` generations)
+  // ── Cross-family links ────────────────────────────────────────────────────
+
+  async createCrossFamilyLink(
+    personId: string,
+    linkedParentId: string,
+    linkedFamilyId: string,
+    linkType: 'father' | 'mother',
+    createdBy: string,
+  ): Promise<CrossFamilyLinkEntity> {
+    // Remove any existing link of the same type for this person
+    await this.crossFamilyRepository.delete({ personId, linkType });
+
+    const link = this.crossFamilyRepository.create({
+      personId,
+      linkedParentId,
+      linkedFamilyId,
+      linkType,
+      createdBy,
+    });
+    return this.crossFamilyRepository.save(link);
+  }
+
+  async getCrossFamilyLinks(personId: string): Promise<CrossFamilyLinkEntity[]> {
+    return this.crossFamilyRepository.find({ where: { personId } });
+  }
+
+  async deleteCrossFamilyLink(linkId: string): Promise<void> {
+    await this.crossFamilyRepository.delete(linkId);
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────────────
+
   private async sqlAncestors(personId: string, depth: number): Promise<PersonEntity[]> {
     const visited = new Set<string>();
     const result: PersonEntity[] = [];
@@ -170,13 +194,31 @@ export class PeopleService {
       visited.add(id);
       const p = await this.personRepository.findOne({ where: { id } });
       if (!p) return;
+
+      // In-family parents via fatherId/motherId columns
       if (p.fatherId) {
         const father = await this.personRepository.findOne({ where: { id: p.fatherId } });
-        if (father) { result.push(father); await traverse(father.id, remaining - 1); }
+        if (father && !visited.has(father.id)) {
+          result.push(father);
+          await traverse(father.id, remaining - 1);
+        }
       }
       if (p.motherId) {
         const mother = await this.personRepository.findOne({ where: { id: p.motherId } });
-        if (mother) { result.push(mother); await traverse(mother.id, remaining - 1); }
+        if (mother && !visited.has(mother.id)) {
+          result.push(mother);
+          await traverse(mother.id, remaining - 1);
+        }
+      }
+
+      // Cross-family parents
+      const links = await this.crossFamilyRepository.find({ where: { personId: id } });
+      for (const link of links) {
+        const xParent = await this.personRepository.findOne({ where: { id: link.linkedParentId } });
+        if (xParent && !visited.has(xParent.id)) {
+          result.push(xParent);
+          await traverse(xParent.id, remaining - 1);
+        }
       }
     };
 
@@ -184,7 +226,6 @@ export class PeopleService {
     return result;
   }
 
-  // SQL-based descendant traversal (up to `depth` generations)
   private async sqlDescendants(personId: string, depth: number): Promise<PersonEntity[]> {
     const visited = new Set<string>();
     const result: PersonEntity[] = [];

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { GotraDataProvider } from '@/providers/GotraDataProvider'
+import { SiteConfigProvider } from '@/providers/SiteConfigProvider'
+import { LanguageProvider } from '@/providers/LanguageProvider'
 
 export const metadata: Metadata = {
   title: 'Vansha Lineage — The Living Archive',
@@ -13,12 +16,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="bg-background text-on-surface antialiased" suppressHydrationWarning>
-        {children}
+        <LanguageProvider>
+          <SiteConfigProvider>
+            <GotraDataProvider>
+              {children}
+            </GotraDataProvider>
+          </SiteConfigProvider>
+        </LanguageProvider>
       </body>
     </html>
   )

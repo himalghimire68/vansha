@@ -59,18 +59,38 @@ export class FamiliesController {
     return this.familiesService.getUserFamilies(userId);
   }
 
+  @Get(':id/members')
+  @ApiOperation({ summary: 'List family members' })
+  async getMembers(@Param('id') familyId: string, @Req() req: any) {
+    const userId = req.user?.userId || req.headers['x-user-id'];
+    if (!userId) throw new BadRequestException('User ID is required');
+    await this.familiesService.getFamily(familyId, userId); // access check
+    return this.familiesService.getMembers(familyId);
+  }
+
   @Post(':id/invite')
-  @ApiOperation({ summary: 'Invite member to family' })
+  @ApiOperation({ summary: 'Invite member to family by email' })
   async invite(
     @Param('id') familyId: string,
     @Body() data: { email: string; role: string },
     @Req() req: any,
   ) {
     const userId = req.user?.userId || req.headers['x-user-id'];
-    if (!userId) {
-      throw new BadRequestException('User ID is required');
-    }
-
+    if (!userId) throw new BadRequestException('User ID is required');
     return this.familiesService.inviteMember(familyId, data.email, data.role, userId);
+  }
+
+  @Post(':id/members')
+  @ApiOperation({ summary: 'Add a known user directly to family by userId' })
+  async addMember(
+    @Param('id') familyId: string,
+    @Body() data: { userId: string; role?: string },
+    @Req() req: any,
+  ) {
+    const requesterId = req.user?.userId || req.headers['x-user-id'];
+    if (!requesterId) throw new BadRequestException('User ID is required');
+    if (!data.userId) throw new BadRequestException('userId is required');
+    await this.familiesService.getFamily(familyId, requesterId); // access check
+    return this.familiesService.addMemberById(familyId, data.userId, data.role || 'member', requesterId);
   }
 }

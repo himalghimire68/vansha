@@ -6,17 +6,16 @@
     "lib": ["ES2021"],
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "../..",
+    "rootDir": "src",
     "baseUrl": "./",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
       "@app/*": ["src/*"],
       "@common/*": ["src/common/*"],
-      "@vansha/shared-types": ["../../packages/shared-types/src"],
       "@vansha/graph-engine": ["../../packages/graph-engine/src"]
     }
   },
-  "include": ["src/**/*", "../web/page.tsx"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

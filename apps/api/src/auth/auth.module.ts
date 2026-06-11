@@ -1,18 +1,16 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { ClerkStrategy } from './strategies/clerk.strategy';
+import { UserEntity } from '../users/user.entity';
 
-/**
- * Authentication Module
- * Handles user authentication via Clerk and JWT token management
- */
 @Module({
+  imports: [TypeOrmModule.forFeature([UserEntity])],
   controllers: [AuthController],
-  providers: [AuthService, ClerkStrategy, JwtService, ConfigService],
+  providers: [AuthService, JwtService, ConfigService],
   exports: [AuthService],
 })
 export class AuthModule {}

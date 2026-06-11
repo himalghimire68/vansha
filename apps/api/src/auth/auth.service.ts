@@ -1,86 +1,96 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { verifyToken } from '@clerk/backend';
-import { User } from '@vansha/shared-types';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { pbkdf2Sync, randomBytes, timingSafeEqual } from 'crypto';
+import { UserEntity } from '../users/user.entity';
 
-interface ClerkUser {
-  id: string;
-  emailAddresses: Array<{ emailAddress: string }>;
-  firstName?: string;
-  lastName?: string;
-  profileImageUrl?: string;
-}
-
-/**
- * Authentication Service
- * Integrates with Clerk for user authentication
- */
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
   ) {}
 
-  /**
-   * Verify Clerk token and extract user information
-   */
-  async verifyClerkToken(token: string): Promise<ClerkUser> {
-    try {
-      const secretKey = this.configService.get('CLERK_SECRET_KEY');
-      if (!secretKey) {
-        throw new Error('CLERK_SECRET_KEY not configured');
+  async login(email: string, password: string): Promise<{ userId: string; token: string }> {
+    const user = await this.userRepository
+      .createQueryBuilder('u')
+      .addSelect('u.passwordHash')
+      .addSelect('u.passwordSalt')
+      .where('u.email = :email', { email })
+      .getOne();
+
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    if (!user.passwordHash || !user.passwordSalt) {
+      // First-time login: set the password and proceed
+      const { salt, hash } = this.hashPassword(password);
+      user.passwordSalt = salt;
+      user.passwordHash = hash;
+    } else {
+      const candidate = pbkdf2Sync(password, user.passwordSalt, 100000, 64, 'sha512').toString('hex');
+      if (!timingSafeEqual(Buffer.from(candidate), Buffer.from(user.passwordHash))) {
+        throw new UnauthorizedException('Invalid credentials');
       }
-
-      const decoded = await verifyToken(token, {
-        secretKey,
-      });
-
-      if (!decoded) {
-        throw new UnauthorizedException('Invalid token');
-      }
-
-      return decoded as unknown as ClerkUser;
-    } catch (error) {
-      throw new UnauthorizedException('Failed to verify token');
     }
+
+    user.lastLoginAt = new Date();
+    await this.userRepository.save(user);
+
+    return { userId: user.id, token: this.generateJwtToken(user.id, { email: user.email }) };
   }
 
-  /**
-   * Generate JWT token for internal use
-   */
+  async register(
+    email: string,
+    password: string,
+    firstName?: string,
+    lastName?: string,
+  ): Promise<{ userId: string; token: string }> {
+    const existing = await this.userRepository.findOne({ where: { email } });
+    if (existing) return this.login(email, password);
+
+    const { salt, hash } = this.hashPassword(password);
+    const user = this.userRepository.create({
+      email,
+      firstName,
+      lastName,
+      passwordSalt: salt,
+      passwordHash: hash,
+      role: 'member',
+      status: 'active',
+      lastLoginAt: new Date(),
+    });
+    const saved = await this.userRepository.save(user);
+
+    return { userId: saved.id, token: this.generateJwtToken(saved.id, { email: saved.email }) };
+  }
+
   generateJwtToken(userId: string, data?: Record<string, unknown>): string {
     return this.jwtService.sign(
+      { sub: userId, ...data },
       {
-        sub: userId,
-        ...data,
-      },
-      {
-        secret: this.configService.get('JWT_SECRET'),
-        expiresIn: this.configService.get('JWT_EXPIRATION'),
+        secret: this.configService.get('JWT_SECRET') || 'dev_secret',
+        expiresIn: this.configService.get('JWT_EXPIRATION') || '7d',
       },
     );
   }
 
-  /**
-   * Verify JWT token
-   */
-  verifyJwtToken(token: string): any {
+  verifyJwtToken(token: string): { sub: string; email?: string } {
     try {
       return this.jwtService.verify(token, {
-        secret: this.configService.get('JWT_SECRET'),
+        secret: this.configService.get('JWT_SECRET') || 'dev_secret',
       });
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
   }
 
-  /**
-   * Refresh JWT token
-   */
-  refreshJwtToken(token: string): string {
-    const decoded = this.verifyJwtToken(token);
-    return this.generateJwtToken(decoded.sub, decoded);
+  private hashPassword(password: string): { salt: string; hash: string } {
+    const salt = randomBytes(16).toString('hex');
+    const hash = pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
+    return { salt, hash };
   }
 }

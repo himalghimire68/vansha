@@ -22,7 +22,24 @@
       "Bash(taskkill /PID 29872 /F)",
       "Bash(taskkill /PID 28360 /F)",
       "Bash(node dist/main.js)",
-      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 10; Write-Output \"Status: $\\($r.StatusCode\\)\"; if \\($r.Content -match \"Vansha\"\\) { Write-Output \"Homepage rendered OK\" } else { Write-Output $r.Content.Substring\\(0, 300\\) } } catch { Write-Output \"Error: $_\" })"
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing -TimeoutSec 10; Write-Output \"Status: $\\($r.StatusCode\\)\"; if \\($r.Content -match \"Vansha\"\\) { Write-Output \"Homepage rendered OK\" } else { Write-Output $r.Content.Substring\\(0, 300\\) } } catch { Write-Output \"Error: $_\" })",
+      "PowerShell(taskkill *)",
+      "PowerShell(Start-Process -FilePath \"cmd.exe\" -ArgumentList \"/c\", \"cd /d D:\\\\Projects\\\\vansha-main\\\\vansha-main\\\\apps\\\\api && npm run start:dev > D:\\\\Projects\\\\vansha-main\\\\vansha-main\\\\apps\\\\api\\\\api.log 2>&1\" -WindowStyle Hidden; Write-Output \"Backend starting...\")",
+      "PowerShell(Start-Sleep -Seconds 12; try { $r = Invoke-WebRequest -Uri \"http://localhost:3001\" -UseBasicParsing -TimeoutSec 5; Write-Output \"Backend: $\\($r.StatusCode\\) - $\\($r.Content\\)\" } catch { Write-Output \"Not ready yet, checking log...\"; Get-Content \"D:\\\\Projects\\\\vansha-main\\\\vansha-main\\\\apps\\\\api\\\\api.log\" | Select-Object -Last 8 })",
+      "Bash(git push *)",
+      "Bash(npx tsc *)",
+      "Bash(timeout 15 npx next dev --turbopack)",
+      "Bash(python -c \"import json,sys; people=json.load\\(sys.stdin\\); [print\\(f\\\\\"{p['id'][:8]}... {p['firstName']} {p['lastName']} father={str\\(p.get\\('fatherId',''\\)\\)[:8]} mother={str\\(p.get\\('motherId',''\\)\\)[:8]}\\\\\"\\) for p in people]\")",
+      "Bash(where chromium *)",
+      "Bash(where chromium-browser *)",
+      "Bash(npx playwright *)",
+      "Bash(npm install *)",
+      "Bash(node test-pedigree.mjs)",
+      "Bash(node -e ' *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Projects\\\\vansha-main\\\\vansha-main\\\\apps\\\\web\\\\src\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Recurse -Filter \"*.tsx\" \"D:\\\\Projects\\\\vansha-main\\\\vansha-main\\\\apps\\\\web\\\\src\\\\app\")",
+      "Bash(Select-Object FullName)"
     ]
   }
 }

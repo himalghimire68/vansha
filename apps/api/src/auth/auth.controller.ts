@@ -1,61 +1,37 @@
-import { Controller, Post, Body, Get, Req, BadRequestException } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 
-interface VerifyTokenRequest {
-  token: string;
-}
-
-interface VerifyTokenResponse {
-  success: boolean;
-  userId: string;
-  email: string;
-}
-
-/**
- * Authentication Controller
- * Handles token verification and authentication operations
- */
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('verify')
-  @ApiOperation({ summary: 'Verify Clerk token' })
-  @ApiResponse({ status: 200, description: 'Token verified successfully' })
-  async verify(@Body() body: VerifyTokenRequest): Promise<VerifyTokenResponse> {
-    if (!body.token) {
-      throw new BadRequestException('Token is required');
+  @Post('login')
+  @ApiOperation({ summary: 'Log in with email and password, receive JWT' })
+  async login(@Body() body: { email?: string; password?: string }) {
+    if (!body.email || !body.password) {
+      throw new BadRequestException('Email and password are required');
     }
+    return this.authService.login(body.email, body.password);
+  }
 
-    try {
-      const clerkUser = await this.authService.verifyClerkToken(body.token);
-      const email = clerkUser.emailAddresses?.[0]?.emailAddress;
-
-      return {
-        success: true,
-        userId: clerkUser.id,
-        email: email || 'unknown',
-      };
-    } catch (error) {
-      throw new BadRequestException('Invalid token');
+  @Post('register')
+  @ApiOperation({ summary: 'Create account, receive JWT' })
+  async register(
+    @Body() body: { email?: string; password?: string; firstName?: string; lastName?: string },
+  ) {
+    if (!body.email || !body.password) {
+      throw new BadRequestException('Email and password are required');
     }
+    return this.authService.register(body.email, body.password, body.firstName, body.lastName);
   }
 
   @Post('refresh')
-  @ApiOperation({ summary: 'Refresh JWT token' })
-  async refresh(@Body('token') token: string): Promise<{ token: string }> {
-    if (!token) {
-      throw new BadRequestException('Token is required');
-    }
-
-    try {
-      const newToken = this.authService.refreshJwtToken(token);
-      return { token: newToken };
-    } catch (error) {
-      throw new BadRequestException('Invalid token');
-    }
+  @ApiOperation({ summary: 'Verify a JWT and return a fresh one' })
+  async refresh(@Body('token') token: string) {
+    if (!token) throw new BadRequestException('Token is required');
+    const payload = this.authService.verifyJwtToken(token);
+    return { token: this.authService.generateJwtToken(payload.sub, { email: payload.email }) };
   }
 }

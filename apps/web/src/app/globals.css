@@ -2,20 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Font & theme custom properties ─────────────────────────────────────── */
+:root {
+  --font-heading: 'Libre Caslon Text', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --bg-page:      #f0fdf4;
+  --accent-primary: #40916c;
+  --accent-secondary: #2e86c1;
+}
+
+[data-font-heading="playfair-display"] { --font-heading: 'Playfair Display', Georgia, serif; }
+[data-font-heading="eb-garamond"]      { --font-heading: 'EB Garamond', Georgia, serif; }
+
+[data-font-body="nunito"]      { --font-body: 'Nunito', system-ui, sans-serif; }
+[data-font-body="source-sans"] { --font-body: 'Source Sans 3', system-ui, sans-serif; }
+
+[data-theme="ocean"]   { --bg-page: #f0f7ff; --accent-primary: #1d6fa4; --accent-secondary: #0e7490; }
+[data-theme="heritage"]{ --bg-page: #fdf8f0; --accent-primary: #92400e; --accent-secondary: #78350f; }
+[data-theme="slate"]   { --bg-page: #f8fafc; --accent-primary: #475569; --accent-secondary: #334155; }
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #f0fdf4;
+  background-color: var(--bg-page);
   color: #0d2218;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Libre Caslon Text', Georgia, serif;
+    font-family: var(--font-heading);
     font-weight: 400;
   }
 }

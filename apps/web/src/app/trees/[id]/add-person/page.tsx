@@ -6,6 +6,7 @@ import Link from 'next/link'
 import DashboardLayout from '@/app/dashboard-layout'
 import { api, ApiPerson } from '@/lib/api'
 import { GotraSelect, SurnameSelect, CasteSelect } from '@/components/GotraSelect'
+import { useLanguage } from '@/providers/LanguageProvider'
 
 const NEPAL_PROVINCES = [
   'Koshi', 'Madhesh', 'Bagmati', 'Gandaki', 'Lumbini', 'Karnali', 'Sudurpashchim',
@@ -39,6 +40,7 @@ function buildRelativeGenMap(rootId: string, people: ApiPerson[]): Map<string, n
 }
 
 export default function AddPersonPage() {
+  const { t } = useLanguage()
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -181,11 +183,11 @@ export default function AddPersonPage() {
       <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-caption font-sans text-on-surface-variant">
-          <Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
+          <Link href="/dashboard" className="hover:text-primary transition-colors">{t('common.dashboard')}</Link>
           <span>›</span>
-          <Link href={`/trees/${treeId}`} className="hover:text-primary transition-colors">Family Tree</Link>
+          <Link href={`/trees/${treeId}`} className="hover:text-primary transition-colors">{t('tree.heading')}</Link>
           <span>›</span>
-          <span className="text-primary">{isAddingChild ? 'Add Child' : 'Add Ancestor'}</span>
+          <span className="text-primary">{isAddingChild ? t('person.addChild') : t('person.addAncestor')}</span>
         </div>
 
         <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 md:p-10 archival-shadow">
@@ -193,17 +195,17 @@ export default function AddPersonPage() {
             {isAddingChild && prefilledPerson ? (
               <>
                 <h1 className="font-serif text-headline-lg text-primary mb-2">
-                  Add Child of {prefilledPerson.firstName} {prefilledPerson.lastName}
+                  {t('person.addChild')} — {prefilledPerson.firstName} {prefilledPerson.lastName}
                 </h1>
                 <p className="font-sans text-body-md text-on-surface-variant">
-                  The {prefilledParentRole} is pre-set. Choose the co-parent from the same generation.
+                  {t('person.parentsDesc')}
                 </p>
               </>
             ) : (
               <>
-                <h1 className="font-serif text-headline-lg text-primary mb-2">Add an Ancestor</h1>
+                <h1 className="font-serif text-headline-lg text-primary mb-2">{t('person.addAncestor')}</h1>
                 <p className="font-sans text-body-md text-on-surface-variant">
-                  Record a member of this family lineage. Every entry enriches the archive.
+                  {t('person.archivalTip')}
                 </p>
               </>
             )}
@@ -222,7 +224,7 @@ export default function AddPersonPage() {
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-on-surface-variant">
                     <span className="text-3xl">📷</span>
-                    <span className="text-[10px] font-sans font-semibold uppercase tracking-wide">Add Photo</span>
+                    <span className="text-[10px] font-sans font-semibold uppercase tracking-wide">{t('person.photo')}</span>
                   </div>
                 )}
               </div>
@@ -230,46 +232,46 @@ export default function AddPersonPage() {
               <div className="flex items-center gap-3">
                 <button type="button" onClick={() => fileInputRef.current?.click()}
                   className="text-label-md font-sans text-secondary hover:underline transition-colors">
-                  {photoPreview ? 'Change Photo' : 'Upload Photo'}
+                  {photoPreview ? t('person.changePhoto') : t('person.uploadPhoto')}
                 </button>
                 {photoPreview && (
                   <button type="button" onClick={removePhoto}
                     className="text-label-md font-sans text-v-error hover:underline transition-colors">
-                    Remove
+                    {t('person.removePhoto')}
                   </button>
                 )}
               </div>
-              <p className="text-caption font-sans text-on-surface-variant/60">JPG, PNG or WEBP · max 5 MB</p>
+              <p className="text-caption font-sans text-on-surface-variant/60">{t('person.photoHint')}</p>
             </div>
 
             {/* Name */}
             <fieldset className="space-y-5">
-              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Full Name</legend>
+              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">{t('person.fullName')}</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">First Name *</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.firstName')} *</label>
                   <input type="text" value={form.firstName} onChange={set('firstName')}
-                    placeholder="e.g. Ram" required className={inputClass} />
+                    placeholder={t('person.firstHolder')} required className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Middle Name</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.middleName')}</label>
                   <input type="text" value={form.middleName} onChange={set('middleName')}
-                    placeholder="e.g. Prasad" className={inputClass} />
+                    placeholder={t('person.middleHolder')} className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="text-caption font-sans text-on-surface-variant mb-1 block">
-                    Last Name *
-                    {form.gotra && <span className="ml-2 text-[10px] text-tertiary-container opacity-80">suggestions from {form.gotra} gotra</span>}
+                    {t('person.lastName')} *
+                    {form.gotra && <span className="ml-2 text-[10px] text-tertiary-container opacity-80">{t('person.casteHelper')}</span>}
                   </label>
                   <SurnameSelect value={form.lastName} gotra={form.gotra}
-                    onChange={(s) => setForm(prev => ({ ...prev, lastName: s }))} placeholder="e.g. Ghimire" />
+                    onChange={(s) => setForm(prev => ({ ...prev, lastName: s }))} placeholder={t('person.lastHolder')} />
                 </div>
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Nepali Name</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.nepaliName')}</label>
                   <input type="text" value={form.nepaliName} onChange={set('nepaliName')}
                     placeholder="नेपाली नाम" className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
@@ -279,35 +281,35 @@ export default function AddPersonPage() {
 
             {/* Vital Details */}
             <fieldset className="space-y-5">
-              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Vital Details</legend>
+              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">{t('person.vitalDetails')}</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Gender</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.gender')}</label>
                   <select value={form.gender} onChange={set('gender')} className={selectClass}>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="male">{t('person.male')}</option>
+                    <option value="female">{t('person.female')}</option>
+                    <option value="other">{t('person.other')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Status</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.status')}</label>
                   <select value={form.isLiving ? 'living' : 'ancestor'}
                     onChange={(e) => setForm(prev => ({ ...prev, isLiving: e.target.value === 'living' }))}
                     className={selectClass}>
-                    <option value="living">Living</option>
-                    <option value="ancestor">Ancestor (Deceased)</option>
+                    <option value="living">{t('person.living')}</option>
+                    <option value="ancestor">{t('person.deceased')}</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Birth Date</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.birthDate')}</label>
                   <input type="date" value={form.birthDate} onChange={set('birthDate')} className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
                 {!form.isLiving && (
                   <div className="relative group">
-                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">Death Date</label>
+                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.deathDate')}</label>
                     <input type="date" value={form.deathDate} onChange={set('deathDate')} className={inputClass} />
                     <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                   </div>
@@ -315,30 +317,30 @@ export default function AddPersonPage() {
               </div>
               <div className="relative group" style={{ maxWidth: 180 }}>
                 <label className="text-caption font-sans text-on-surface-variant mb-1 block">
-                  Birth Order <span className="opacity-50">(1 = eldest)</span>
+                  {t('person.birthOrder')}
                 </label>
                 <input type="number" min="1" max="20" value={form.birthOrder} onChange={set('birthOrder')}
-                  placeholder="e.g. 1" className={inputClass} />
+                  placeholder={t('person.birthOrderHolder')} className={inputClass} />
                 <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
               </div>
             </fieldset>
 
             {/* Heritage */}
             <fieldset className="space-y-5">
-              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Lineage & Heritage</legend>
+              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">{t('person.heritageSection')}</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="text-caption font-sans text-on-surface-variant mb-1 block">
-                    Gotra
-                    <span className="ml-2 text-[10px] text-on-surface-variant/50">auto-fills from Surname/Caste</span>
+                    {t('person.gotra')}
+                    <span className="ml-2 text-[10px] text-on-surface-variant/50">{t('person.gotraHelper')}</span>
                   </label>
                   <GotraSelect value={form.gotra} onChange={(g) => setForm(prev => ({ ...prev, gotra: g }))} />
                 </div>
                 <div>
                   <label className="text-caption font-sans text-on-surface-variant mb-1 block">
-                    Surname / Caste
+                    {t('person.caste')}
                     {form.gotra && (
-                      <span className="ml-2 text-[10px] text-tertiary-container opacity-80">gotra will auto-fill on selection</span>
+                      <span className="ml-2 text-[10px] text-tertiary-container opacity-80">{t('person.casteHelper')}</span>
                     )}
                   </label>
                   <CasteSelect value={form.caste}
@@ -348,21 +350,21 @@ export default function AddPersonPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Ancestral Village</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.village')}</label>
                   <input type="text" value={form.ancestralVillage} onChange={set('ancestralVillage')}
-                    placeholder="e.g. Gorkha" className={inputClass} />
+                    placeholder={t('person.villageHolder')} className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">District</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.district')}</label>
                   <input type="text" value={form.ancestralDistrict} onChange={set('ancestralDistrict')}
-                    placeholder="e.g. Gorkha" className={inputClass} />
+                    placeholder={t('person.districtHolder')} className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Province</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.province')}</label>
                   <select value={form.ancestralProvince} onChange={set('ancestralProvince')} className={selectClass}>
-                    <option value="">Select province</option>
+                    <option value="">{t('newTree.selectProvince')}</option>
                     {NEPAL_PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
@@ -372,20 +374,20 @@ export default function AddPersonPage() {
             {/* Parent Links */}
             {(existingPeople.length > 0 || isAddingChild) && (
               <fieldset className="space-y-5">
-                <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Link Parents</legend>
+                <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">{t('person.parentsSection')}</legend>
                 <p className="text-caption font-sans text-on-surface-variant -mt-2">
                   {isAddingChild && prefilledPerson
                     ? <>
                         <span className="font-semibold text-primary">{prefilledPerson.firstName} {prefilledPerson.lastName}</span>
-                        {' '}is pre-set as the {prefilledParentRole}. The co-parent list shows only same-generation members.
+                        {' '}{t('person.parentsDesc')}
                       </>
-                    : 'Optional — connect this person to existing members of the tree.'}
+                    : t('person.parentsDesc')}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {/* Father field */}
                   <div>
-                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">Father</label>
+                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('modal.father')}</label>
                     {prefilledParentRole === 'father' && prefilledParentId ? (
                       // Locked chip — this person is pre-selected as father
                       <div className="flex items-center gap-2 py-3 px-3 rounded-xl border border-secondary/40 bg-secondary-container/30">
@@ -397,12 +399,12 @@ export default function AddPersonPage() {
                         </span>
                         <span className="text-[10px] font-sans font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
                           style={{ background: '#d8f3dc', color: '#1b4332' }}>
-                          pre-set
+                          {t('person.preset')}
                         </span>
                       </div>
                     ) : (
                       <select value={form.fatherId} onChange={set('fatherId')} className={selectClass}>
-                        <option value="">— None —</option>
+                        <option value="">{t('person.selectParent')}</option>
                         {existingPeople
                           .filter(p => (p.gender === 'male' || p.gender === 'other') && isSameGen(p))
                           .map(p => (
@@ -418,7 +420,7 @@ export default function AddPersonPage() {
 
                   {/* Mother field */}
                   <div>
-                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">Mother</label>
+                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('modal.mother')}</label>
                     {prefilledParentRole === 'mother' && prefilledParentId ? (
                       // Locked chip — this person is pre-selected as mother
                       <div className="flex items-center gap-2 py-3 px-3 rounded-xl border border-secondary/40 bg-secondary-container/30">
@@ -430,12 +432,12 @@ export default function AddPersonPage() {
                         </span>
                         <span className="text-[10px] font-sans font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
                           style={{ background: '#d8f3dc', color: '#1b4332' }}>
-                          pre-set
+                          {t('person.preset')}
                         </span>
                       </div>
                     ) : (
                       <select value={form.motherId} onChange={set('motherId')} className={selectClass}>
-                        <option value="">— None —</option>
+                        <option value="">{t('person.selectParent')}</option>
                         {existingPeople
                           .filter(p => (p.gender === 'female' || p.gender === 'other') && isSameGen(p))
                           .map(p => (
@@ -454,9 +456,9 @@ export default function AddPersonPage() {
 
             {/* Biography */}
             <div className="space-y-2">
-              <label className="text-caption font-sans text-on-surface-variant block">Biography / Life Story</label>
+              <label className="text-caption font-sans text-on-surface-variant block">{t('person.biography')}</label>
               <textarea value={form.biography} onChange={set('biography')}
-                placeholder="Share what is remembered of this ancestor's life, achievements, and character..."
+                placeholder={t('person.bioHolder')}
                 rows={4}
                 className="w-full bg-surface-container-low border border-outline-variant rounded-xl p-4 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary transition-colors resize-none placeholder:text-outline-variant/60"
               />
@@ -471,15 +473,15 @@ export default function AddPersonPage() {
                 {isLoading ? (
                   <>
                     <span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" />
-                    Inscribing to Archive...
+                    {t('person.inscribing')}
                   </>
                 ) : (
-                  <><span>📜</span>{isAddingChild ? 'Add Child' : 'Record This Ancestor'}</>
+                  <><span>📜</span>{isAddingChild ? t('person.addChild') : t('person.recordAncestor')}</>
                 )}
               </button>
               <Link href={`/trees/${treeId}`}
                 className="px-6 py-4 border border-outline-variant text-on-surface-variant text-label-md font-sans rounded-brand hover:border-secondary hover:text-primary transition-all">
-                Cancel
+                {t('person.cancel')}
               </Link>
             </div>
           </form>
@@ -489,11 +491,8 @@ export default function AddPersonPage() {
         <div className="bg-secondary-container/40 border border-secondary-fixed/30 rounded-xl p-5 flex gap-3">
           <span className="text-xl">💡</span>
           <div>
-            <p className="font-sans text-label-md text-on-secondary-container mb-1">Archival Guidance</p>
-            <p className="font-sans text-caption text-on-secondary-container/80">
-              For living individuals, only first and last name are required. Add as much or as little
-              detail as the family is comfortable sharing — privacy settings can be adjusted later.
-            </p>
+            <p className="font-sans text-label-md text-on-secondary-container mb-1">{t('person.archivalGuide')}</p>
+            <p className="font-sans text-caption text-on-secondary-container/80">{t('person.archivalTip')}</p>
           </div>
         </div>
       </div>

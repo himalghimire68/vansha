@@ -349,32 +349,32 @@ export declare const CreatePersonSchema: z.ZodObject<{
     firstName: string;
     lastName: string;
     gender: "male" | "female" | "other";
+    ancestralVillage?: string | undefined;
+    nepaliName?: string | undefined;
     birthDate?: Date | undefined;
-    birthDateAccuracy?: "exact" | "approximate" | "estimated" | "unknown" | undefined;
+    birthDateAccuracy?: "unknown" | "exact" | "approximate" | "estimated" | undefined;
     deathDate?: Date | undefined;
-    deathDateAccuracy?: "exact" | "approximate" | "estimated" | "unknown" | undefined;
+    deathDateAccuracy?: "unknown" | "exact" | "approximate" | "estimated" | undefined;
+    biography?: string | undefined;
+    caste?: string | undefined;
+    gotra?: string | undefined;
     fatherId?: string | undefined;
     motherId?: string | undefined;
-    nepaliName?: string | undefined;
-    gotra?: string | undefined;
-    caste?: string | undefined;
-    ancestralVillage?: string | undefined;
-    biography?: string | undefined;
 }, {
     firstName: string;
     lastName: string;
     gender: "male" | "female" | "other";
+    ancestralVillage?: string | undefined;
+    nepaliName?: string | undefined;
     birthDate?: Date | undefined;
-    birthDateAccuracy?: "exact" | "approximate" | "estimated" | "unknown" | undefined;
+    birthDateAccuracy?: "unknown" | "exact" | "approximate" | "estimated" | undefined;
     deathDate?: Date | undefined;
-    deathDateAccuracy?: "exact" | "approximate" | "estimated" | "unknown" | undefined;
+    deathDateAccuracy?: "unknown" | "exact" | "approximate" | "estimated" | undefined;
+    biography?: string | undefined;
+    caste?: string | undefined;
+    gotra?: string | undefined;
     fatherId?: string | undefined;
     motherId?: string | undefined;
-    nepaliName?: string | undefined;
-    gotra?: string | undefined;
-    caste?: string | undefined;
-    ancestralVillage?: string | undefined;
-    biography?: string | undefined;
 }>;
 export declare const CreateFamilySchema: z.ZodObject<{
     name: z.ZodString;
@@ -384,14 +384,14 @@ export declare const CreateFamilySchema: z.ZodObject<{
     ancestralProvince: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     name: string;
-    ancestralVillage?: string | undefined;
     description?: string | undefined;
+    ancestralVillage?: string | undefined;
     ancestralDistrict?: string | undefined;
     ancestralProvince?: string | undefined;
 }, {
     name: string;
-    ancestralVillage?: string | undefined;
     description?: string | undefined;
+    ancestralVillage?: string | undefined;
     ancestralDistrict?: string | undefined;
     ancestralProvince?: string | undefined;
 }>;
@@ -400,10 +400,10 @@ export declare const InviteFamilyMemberSchema: z.ZodObject<{
     role: z.ZodEnum<["admin", "elder", "contributor", "member", "viewer"]>;
 }, "strip", z.ZodTypeAny, {
     email: string;
-    role: "admin" | "elder" | "contributor" | "member" | "viewer";
+    role: "member" | "admin" | "elder" | "contributor" | "viewer";
 }, {
     email: string;
-    role: "admin" | "elder" | "contributor" | "member" | "viewer";
+    role: "member" | "admin" | "elder" | "contributor" | "viewer";
 }>;
 export declare const ErrorCodes: {
     readonly UNAUTHORIZED: "UNAUTHORIZED";

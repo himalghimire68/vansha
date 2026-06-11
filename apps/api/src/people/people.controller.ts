@@ -3,6 +3,7 @@ import {
   Post,
   Patch,
   Get,
+  Delete,
   Body,
   Param,
   Query,
@@ -85,5 +86,38 @@ export class PeopleController {
     @Param('otherId') personId2: string,
   ) {
     return this.peopleService.findRelationship(personId1, personId2);
+  }
+
+  @Get(':id/cross-family-links')
+  @ApiOperation({ summary: 'Get persisted cross-family parent links for a person' })
+  async getCrossFamilyLinks(@Param('id') personId: string) {
+    return this.peopleService.getCrossFamilyLinks(personId);
+  }
+
+  @Post(':id/cross-family-links')
+  @ApiOperation({ summary: 'Link a person to a parent in another family' })
+  async createCrossFamilyLink(
+    @Param('id') personId: string,
+    @Body() body: { linkedParentId: string; linkedFamilyId: string; linkType: 'father' | 'mother' },
+    @Req() req: any,
+  ) {
+    if (!body.linkedParentId || !body.linkedFamilyId || !body.linkType) {
+      throw new BadRequestException('linkedParentId, linkedFamilyId and linkType are required');
+    }
+    const userId = req.user?.userId || req.headers['x-user-id'];
+    if (!userId) throw new BadRequestException('User ID is required');
+    return this.peopleService.createCrossFamilyLink(
+      personId, body.linkedParentId, body.linkedFamilyId, body.linkType, userId,
+    );
+  }
+
+  @Delete(':id/cross-family-links/:linkId')
+  @ApiOperation({ summary: 'Remove a cross-family parent link' })
+  async deleteCrossFamilyLink(
+    @Param('id') _personId: string,
+    @Param('linkId') linkId: string,
+  ) {
+    await this.peopleService.deleteCrossFamilyLink(linkId);
+    return { ok: true };
   }
 }

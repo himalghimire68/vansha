@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { join } from 'path';
 
+import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { FamiliesModule } from './families/families.module';
 import { PeopleModule } from './people/people.module';
@@ -11,14 +12,25 @@ import { ApprovalsModule } from './approvals/approvals.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SearchModule } from './search/search.module';
 import { RelationshipsModule } from './people/relationships.module';
+import { VanshaConfigModule } from './config/config.module';
+import { UsersModule } from './users/users.module';
+import { UploadModule } from './upload/upload.module';
 import { HealthController } from './common/health.controller';
 
 import { FamilyEntity } from './family.entity';
 import { PersonEntity } from './person.entity';
+import { FamilyMemberEntity } from './family-member.entity';
+import { CrossFamilyLinkEntity } from './cross-family-link.entity';
 import { ApprovalRequestEntity } from './approval-request.entity';
 import { NotificationEntity } from './notification.entity';
+import { GotraConfigEntity } from './config/gotra-config.entity';
+import { SiteConfigEntity } from './config/site-config.entity';
+import { UserEntity } from './users/user.entity';
 
-const ALL_ENTITIES = [FamilyEntity, PersonEntity, ApprovalRequestEntity, NotificationEntity];
+const ALL_ENTITIES = [
+  FamilyEntity, PersonEntity, FamilyMemberEntity, CrossFamilyLinkEntity,
+  ApprovalRequestEntity, NotificationEntity, GotraConfigEntity, SiteConfigEntity, UserEntity,
+];
 
 @Controller()
 export class AppController {
@@ -90,6 +102,7 @@ export class AppController {
       }),
     }),
 
+    AdminModule,
     AuthModule,
     FamiliesModule,
     PeopleModule,
@@ -97,6 +110,9 @@ export class AppController {
     NotificationsModule,
     SearchModule,
     RelationshipsModule,
+    VanshaConfigModule,
+    UsersModule,
+    UploadModule,
   ],
   controllers: [AppController, HealthController],
 })

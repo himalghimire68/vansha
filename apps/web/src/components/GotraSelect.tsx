@@ -2,21 +2,9 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { GOTRA_LIST, GotraEntry } from '@/lib/gotraData'
+import { useGotraList } from '@/providers/GotraDataProvider'
 
-// ─── Flat list of all surname → gotra mappings ─────────────────────────────
 interface SurnameEntry { surname: string; gotra: string; nepali: string }
-
-function buildSurnameIndex(): SurnameEntry[] {
-  const entries: SurnameEntry[] = []
-  for (const g of GOTRA_LIST) {
-    for (const s of g.surnames) {
-      entries.push({ surname: s, gotra: g.gotra, nepali: g.nepali })
-    }
-  }
-  return entries.sort((a, b) => a.surname.localeCompare(b.surname))
-}
-
-const SURNAME_INDEX = buildSurnameIndex()
 
 interface Props {
   value: string
@@ -25,20 +13,21 @@ interface Props {
 }
 
 export function GotraSelect({ value, onChange, placeholder = 'Search gotra…' }: Props) {
+  const gotraList = useGotraList()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const selected = GOTRA_LIST.find(g => g.gotra === value)
+  const selected = gotraList.find(g => g.gotra === value)
   const displayText = selected ? `${selected.gotra} (${selected.nepali})` : ''
 
   const filtered = query.trim()
-    ? GOTRA_LIST.filter(g =>
+    ? gotraList.filter(g =>
         g.gotra.toLowerCase().includes(query.toLowerCase()) ||
         g.nepali.includes(query) ||
         g.surnames.some(s => s.toLowerCase().includes(query.toLowerCase()))
       )
-    : GOTRA_LIST
+    : gotraList
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -70,7 +59,6 @@ export function GotraSelect({ value, onChange, placeholder = 'Search gotra…' }
 
       {open && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-outline-variant rounded-xl shadow-archival-lg z-30 overflow-hidden">
-          {/* Search box inside dropdown */}
           <div className="p-2 border-b border-outline-variant">
             <input
               autoFocus
@@ -128,18 +116,18 @@ interface SurnameProps {
 }
 
 export function SurnameSelect({ value, gotra, onChange, placeholder = 'Enter or select surname…' }: SurnameProps) {
+  const gotraList = useGotraList()
   const [query, setQuery] = useState(value)
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const gotraEntry: GotraEntry | undefined = GOTRA_LIST.find(g => g.gotra === gotra)
+  const gotraEntry: GotraEntry | undefined = gotraList.find(g => g.gotra === gotra)
   const allSurnames = gotraEntry?.surnames ?? []
 
   const filtered = query.trim()
     ? allSurnames.filter(s => s.toLowerCase().includes(query.toLowerCase()))
     : allSurnames
 
-  // Keep the query in sync with the external value
   useEffect(() => { setQuery(value) }, [value])
 
   useEffect(() => {
@@ -189,7 +177,6 @@ export function SurnameSelect({ value, gotra, onChange, placeholder = 'Enter or 
 }
 
 // ─── CasteSelect ───────────────────────────────────────────────────────────
-// Searches ALL surnames across all gotras. Selecting one auto-fills gotra.
 interface CasteSelectProps {
   value: string
   onChangeValue: (surname: string) => void
@@ -203,21 +190,32 @@ export function CasteSelect({
   onGotraDetected,
   placeholder = 'Type surname / caste to search…',
 }: CasteSelectProps) {
+  const gotraList = useGotraList()
   const [query, setQuery] = useState(value)
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => { setQuery(value) }, [value])
 
+  const surnameIndex = useMemo<SurnameEntry[]>(() => {
+    const entries: SurnameEntry[] = []
+    for (const g of gotraList) {
+      for (const s of g.surnames) {
+        entries.push({ surname: s, gotra: g.gotra, nepali: g.nepali })
+      }
+    }
+    return entries.sort((a, b) => a.surname.localeCompare(b.surname))
+  }, [gotraList])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    if (!q) return SURNAME_INDEX.slice(0, 40)
-    return SURNAME_INDEX.filter(e =>
+    if (!q) return surnameIndex.slice(0, 40)
+    return surnameIndex.filter(e =>
       e.surname.toLowerCase().includes(q) ||
       e.gotra.toLowerCase().includes(q) ||
       e.nepali.includes(query)
     ).slice(0, 60)
-  }, [query])
+  }, [query, surnameIndex])
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

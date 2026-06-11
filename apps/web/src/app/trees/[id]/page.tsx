@@ -6,6 +6,7 @@ import Link from 'next/link'
 import DashboardLayout from '@/app/dashboard-layout'
 import { api, ApiFamily, ApiPerson } from '@/lib/api'
 import { CrossFamilyPicker, PickedPerson } from '@/components/CrossFamilyPicker'
+import { useLanguage } from '@/providers/LanguageProvider'
 import dynamic from 'next/dynamic'
 import type { ViewMode } from '@/components/PedigreeTree'
 
@@ -24,6 +25,7 @@ function AssignRelationsModal({
   onClose: () => void
   onSaved: (updates: ApiPerson[]) => void
 }) {
+  const { t } = useLanguage()
   const [tab, setTab] = useState<'parents' | 'children'>('parents')
   const [father, setFather] = useState<ApiPerson | null>(
     allPeople.find(p => p.id === person.fatherId) ?? null
@@ -93,24 +95,24 @@ function AssignRelationsModal({
       >
         {/* Header */}
         <div className="px-8 pt-7 pb-4 border-b border-outline-variant flex-shrink-0">
-          <h3 className="font-serif text-headline-md text-primary mb-0.5">Link Relations</h3>
+          <h3 className="font-serif text-headline-md text-primary mb-0.5">{t('modal.linkRelations')}</h3>
           <p className="font-sans text-caption text-on-surface-variant">
             For <strong>{person.firstName} {person.lastName}</strong>
           </p>
           {/* Tabs */}
           <div className="flex gap-1 mt-4">
-            {(['parents', 'children'] as const).map(t => (
+            {(['parents', 'children'] as const).map(tabKey => (
               <button
-                key={t}
+                key={tabKey}
                 type="button"
-                onClick={() => setTab(t)}
+                onClick={() => setTab(tabKey)}
                 className={`px-4 py-2 rounded-xl text-label-md font-sans transition-all capitalize ${
-                  tab === t
+                  tab === tabKey
                     ? 'bg-primary text-on-primary'
                     : 'text-on-surface-variant hover:bg-surface-container-high'
                 }`}
               >
-                {t === 'parents' ? '👨‍👩‍👦 Parents' : '👶 Offspring'}
+                {tabKey === 'parents' ? t('modal.parents') : t('modal.offspring')}
               </button>
             ))}
           </div>
@@ -121,13 +123,13 @@ function AssignRelationsModal({
           {tab === 'parents' && (
             <>
               <CrossFamilyPicker
-                label="Father — pick from any family"
+                label={t('modal.fatherLabel')}
                 currentValue={father}
                 excludeId={person.id}
                 onPick={handlePickFather}
               />
               <CrossFamilyPicker
-                label="Mother — pick from any family"
+                label={t('modal.motherLabel')}
                 currentValue={mother}
                 excludeId={person.id}
                 onPick={handlePickMother}
@@ -144,7 +146,7 @@ function AssignRelationsModal({
 
               {/* Pending child picker */}
               <CrossFamilyPicker
-                label="Select child to link"
+                label={t('modal.offspring')}
                 currentValue={pendingChild}
                 excludeId={person.id}
                 onPick={handlePickChild}
@@ -156,11 +158,11 @@ function AssignRelationsModal({
                   </span>
                   <label className="flex items-center gap-1 text-caption font-sans text-primary cursor-pointer">
                     <input type="radio" value="father" checked={pendingRole === 'father'}
-                           onChange={() => setPendingRole('father')} /> Father
+                           onChange={() => setPendingRole('father')} /> {t('modal.father')}
                   </label>
                   <label className="flex items-center gap-1 text-caption font-sans text-primary cursor-pointer">
                     <input type="radio" value="mother" checked={pendingRole === 'mother'}
-                           onChange={() => setPendingRole('mother')} /> Mother
+                           onChange={() => setPendingRole('mother')} /> {t('modal.mother')}
                   </label>
                   <button
                     type="button"
@@ -175,7 +177,7 @@ function AssignRelationsModal({
               {/* Queued child links */}
               {childLinks.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-label-md font-sans text-on-surface-variant">To be linked:</p>
+                  <p className="text-label-md font-sans text-on-surface-variant">{t('modal.toBeLinked')}</p>
                   {childLinks.map(({ person: child, role }) => (
                     <div key={child.id}
                          className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container">
@@ -211,15 +213,15 @@ function AssignRelationsModal({
             className="flex-1 bg-primary text-on-primary text-label-md font-sans py-3 rounded-brand hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {saving
-              ? <><span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" /> Saving…</>
-              : 'Save All Links'}
+              ? <><span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" /> {t('person.inscribing')}</>
+              : t('modal.saveLinks')}
           </button>
           <button
             type="button"
             onClick={onClose}
             className="px-5 py-3 border border-outline-variant text-on-surface-variant text-label-md font-sans rounded-brand hover:border-secondary transition-all"
           >
-            Cancel
+            {t('modal.cancel')}
           </button>
         </div>
       </div>
@@ -236,6 +238,7 @@ function FamilyTreeView({
   people: ApiPerson[]
   treeId: string
 }) {
+  const { t } = useLanguage()
   const [people, setPeople] = useState<ApiPerson[]>(initialPeople)
   const [assignTarget, setAssignTarget] = useState<ApiPerson | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('pedigree')
@@ -309,11 +312,11 @@ function FamilyTreeView({
     return (
       <div className="text-center py-16">
         <span className="text-5xl block mb-4">🌿</span>
-        <h3 className="font-serif text-headline-md text-primary mb-2">No ancestors recorded yet</h3>
-        <p className="font-sans text-body-md text-on-surface-variant mb-6">Begin adding members to build your family tree.</p>
+        <h3 className="font-serif text-headline-md text-primary mb-2">{t('tree.noAncestors')}</h3>
+        <p className="font-sans text-body-md text-on-surface-variant mb-6">{t('tree.noAncestorsMsg')}</p>
         <Link href={`/trees/${treeId}/add-person`}
           className="inline-flex items-center gap-2 bg-primary text-on-primary text-label-md font-sans px-6 py-3 rounded-brand hover:opacity-90 transition-opacity">
-          + Add First Ancestor
+          {t('tree.addFirst')}
         </Link>
       </div>
     )
@@ -334,7 +337,7 @@ function FamilyTreeView({
             </span>
           ) : (
             <span className="text-caption font-sans text-on-surface-variant">
-              Click any node → "Set as Me" to anchor relations
+              {t('tree.meHint')}
             </span>
           )}
         </div>
@@ -348,16 +351,14 @@ function FamilyTreeView({
                   ? 'bg-primary text-on-primary shadow-sm'
                   : 'text-on-surface-variant hover:bg-surface-container-high'
               }`}>
-              {mode === 'pedigree' ? '🌳 Pedigree' : '🔭 Full Graph'}
+              {mode === 'pedigree' ? t('tree.pedigree') : t('tree.fullGraph')}
             </button>
           ))}
         </div>
       </div>
 
       <p className="text-caption font-sans text-on-surface-variant mb-3">
-        {viewMode === 'pedigree'
-          ? 'Showing ancestors, siblings, children of "Me" • Click node for actions'
-          : 'Showing all family members • Dashed border = external family (click to expand)'}
+        {viewMode === 'pedigree' ? t('tree.pedigreeHint') : t('tree.fullGraphHint')}
       </p>
 
       <div style={{ height: 620, borderRadius: 16, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
@@ -392,6 +393,7 @@ function FamilyTreeView({
 
 // ─── Page ──────────────────────────────────────────────────────────────────
 export default function TreePage() {
+  const { t } = useLanguage()
   const params = useParams()
   const treeId = params?.id as string
   const [family, setFamily] = useState<ApiFamily | null>(null)
@@ -411,9 +413,9 @@ export default function TreePage() {
       <div className="space-y-8 animate-fade-in">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-caption font-sans text-on-surface-variant">
-          <Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
+          <Link href="/dashboard" className="hover:text-primary transition-colors">{t('common.dashboard')}</Link>
           <span>›</span>
-          <span className="text-primary">{family?.name || 'Family Tree'}</span>
+          <span className="text-primary">{family?.name || t('tree.heading')}</span>
         </div>
 
         {isLoading ? (
@@ -426,10 +428,10 @@ export default function TreePage() {
         ) : !family ? (
           <div className="text-center py-20">
             <span className="text-5xl block mb-4">📜</span>
-            <h2 className="font-serif text-headline-md text-primary mb-2">Archive Not Found</h2>
-            <p className="font-sans text-body-md text-on-surface-variant mb-6">This family tree could not be located.</p>
+            <h2 className="font-serif text-headline-md text-primary mb-2">{t('tree.notFound')}</h2>
+            <p className="font-sans text-body-md text-on-surface-variant mb-6">{t('tree.notFoundMsg')}</p>
             <Link href="/dashboard" className="bg-primary text-on-primary text-label-md font-sans px-6 py-3 rounded-brand hover:opacity-90 transition-opacity inline-block">
-              Back to Dashboard
+              {t('tree.backToDash')}
             </Link>
           </div>
         ) : (
@@ -453,7 +455,7 @@ export default function TreePage() {
                   )}
                   <span className="px-3 py-1 rounded-full text-caption font-sans font-semibold"
                         style={{ background: '#fef3c7', color: '#92400e' }}>
-                    👥 {people.length} member{people.length !== 1 ? 's' : ''}
+                    👥 {people.length} {people.length !== 1 ? t('tree.members') : t('tree.member')}
                   </span>
                 </div>
               </div>
@@ -462,16 +464,16 @@ export default function TreePage() {
                 className="px-6 py-3 rounded-brand font-sans font-semibold text-label-md flex items-center gap-2 hover:opacity-90 transition-all whitespace-nowrap"
                 style={{ background: '#fef3c7', color: '#92400e' }}
               >
-                + Add Ancestor
+                {t('tree.addAncestor')}
               </Link>
             </div>
 
             {/* Tree view */}
             <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 archival-shadow">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-serif text-headline-md text-primary">Family Lineage Tree</h2>
+                <h2 className="font-serif text-headline-md text-primary">{t('tree.heading')}</h2>
                 <span className="text-caption font-sans text-on-surface-variant">
-                  {people.length} member{people.length !== 1 ? 's' : ''}
+                  {people.length} {people.length !== 1 ? t('tree.members') : t('tree.member')}
                 </span>
               </div>
               <FamilyTreeView people={people} treeId={treeId} />

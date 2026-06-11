@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { api, ApiPerson, ApiRelationship } from '@/lib/api'
+import { useLanguage } from '@/providers/LanguageProvider'
 
 interface Person {
   id: string
@@ -33,6 +34,7 @@ function toEntry(p: ApiPerson): Person {
 }
 
 export default function ExploreRelationshipsPage() {
+  const { t } = useLanguage()
   const [allPeople, setAllPeople] = useState<Person[]>([])
   const [person1, setPerson1] = useState<Person | null>(null)
   const [person2, setPerson2] = useState<Person | null>(null)
@@ -66,15 +68,15 @@ export default function ExploreRelationshipsPage() {
   const sug2 = filter(search2)
 
   const handleExplore = async () => {
-    if (!person1 || !person2) { setError('Please select both people.'); return }
-    if (person1.id === person2.id) { setError('Please select two different people.'); return }
+    if (!person1 || !person2) { setError(t('explore.errSelectBoth')); return }
+    if (person1.id === person2.id) { setError(t('explore.errDifferent')); return }
     setError('')
     setIsLoading(true)
     try {
       const rel = await api.findRelationship(person1.familyId, person1.id, person2.id)
       setResult({ person1, person2, relationship: describeRelationship(rel), distance: rel.distance ?? 0 })
     } catch {
-      setError('Failed to find relationship. Please try again.')
+      setError(t('explore.errFailed'))
     } finally {
       setIsLoading(false)
     }
@@ -84,10 +86,8 @@ export default function ExploreRelationshipsPage() {
     <div className="space-y-10 animate-fade-in">
       {/* Header */}
       <div>
-        <h1 className="font-serif text-headline-lg text-primary mb-2">Explore Relationships</h1>
-        <p className="font-sans text-body-md text-on-surface-variant">
-          Discover how two family members are connected across generations.
-        </p>
+        <h1 className="font-serif text-headline-lg text-primary mb-2">{t('explore.heading')}</h1>
+        <p className="font-sans text-body-md text-on-surface-variant">{t('explore.subtext')}</p>
       </div>
 
       {/* Selector Card */}
@@ -97,7 +97,7 @@ export default function ExploreRelationshipsPage() {
           <div className="relative">
             <label className="text-label-md font-sans text-on-surface-variant mb-3 block flex items-center gap-2">
               <span className="w-5 h-5 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container text-xs font-bold">1</span>
-              First Person
+              {t('explore.person1')}
             </label>
             <div className="relative group">
               <input
@@ -105,7 +105,7 @@ export default function ExploreRelationshipsPage() {
                 value={search1}
                 onChange={(e) => { setSearch1(e.target.value); setShow1(true) }}
                 onFocus={() => setShow1(true)}
-                placeholder="Search family members..."
+                placeholder={t('explore.searchHolder')}
                 className="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none transition-all placeholder:text-outline"
               />
               <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
@@ -118,7 +118,7 @@ export default function ExploreRelationshipsPage() {
                     {p.name}
                   </button>
                 )) : (
-                  <div className="px-4 py-3 font-sans text-body-md text-on-surface-variant">No matches found</div>
+                  <div className="px-4 py-3 font-sans text-body-md text-on-surface-variant">{t('explore.noMatches')}</div>
                 )}
               </div>
             )}
@@ -134,7 +134,7 @@ export default function ExploreRelationshipsPage() {
           <div className="relative">
             <label className="text-label-md font-sans text-on-surface-variant mb-3 block flex items-center gap-2">
               <span className="w-5 h-5 bg-tertiary-fixed rounded-full flex items-center justify-center text-on-tertiary-fixed text-xs font-bold">2</span>
-              Second Person
+              {t('explore.person2')}
             </label>
             <div className="relative group">
               <input
@@ -142,7 +142,7 @@ export default function ExploreRelationshipsPage() {
                 value={search2}
                 onChange={(e) => { setSearch2(e.target.value); setShow2(true) }}
                 onFocus={() => setShow2(true)}
-                placeholder="Search family members..."
+                placeholder={t('explore.searchHolder')}
                 className="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none transition-all placeholder:text-outline"
               />
               <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
@@ -155,7 +155,7 @@ export default function ExploreRelationshipsPage() {
                     {p.name}
                   </button>
                 )) : (
-                  <div className="px-4 py-3 font-sans text-body-md text-on-surface-variant">No matches found</div>
+                  <div className="px-4 py-3 font-sans text-body-md text-on-surface-variant">{t('explore.noMatches')}</div>
                 )}
               </div>
             )}
@@ -182,10 +182,10 @@ export default function ExploreRelationshipsPage() {
           {isLoading ? (
             <>
               <span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin-slow" />
-              Tracing Connection...
+              {t('explore.tracing')}
             </>
           ) : (
-            <>🔍 Trace Relationship</>
+            <>{t('explore.trace')}</>
           )}
         </button>
       </div>
@@ -193,7 +193,7 @@ export default function ExploreRelationshipsPage() {
       {/* Result */}
       {result && (
         <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 archival-shadow-lg animate-slide-up">
-          <h2 className="font-serif text-headline-md text-primary mb-8">Connection Discovered</h2>
+          <h2 className="font-serif text-headline-md text-primary mb-8">{t('explore.found')}</h2>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
             <div className="text-center">
               <div className="w-20 h-20 rounded-2xl bg-secondary-container flex items-center justify-center font-serif text-2xl text-on-secondary-container mb-2">
@@ -204,7 +204,7 @@ export default function ExploreRelationshipsPage() {
             <div className="flex-1 text-center px-4">
               <p className="font-serif text-headline-md text-secondary mb-1">{result.relationship}</p>
               {result.distance > 0 && (
-                <p className="font-sans text-caption text-on-surface-variant">{result.distance} generation{result.distance !== 1 ? 's' : ''} apart</p>
+                <p className="font-sans text-caption text-on-surface-variant">{result.distance} {t('explore.generations')}</p>
               )}
             </div>
             <div className="text-center">
@@ -218,7 +218,7 @@ export default function ExploreRelationshipsPage() {
             onClick={() => { setResult(null); setPerson1(null); setPerson2(null) }}
             className="w-full py-3 border border-outline text-on-surface-variant text-label-md font-sans rounded-brand hover:border-secondary hover:text-secondary transition-all"
           >
-            Search Again
+            {t('explore.searchAgain')}
           </button>
         </div>
       )}
@@ -227,10 +227,8 @@ export default function ExploreRelationshipsPage() {
       {!result && (
         <div className="bg-secondary-container/30 border border-secondary-fixed/40 rounded-2xl p-8 text-center">
           <span className="text-4xl block mb-4">🌳</span>
-          <h3 className="font-serif text-headline-md text-primary mb-2">How It Works</h3>
-          <p className="font-sans text-body-md text-on-surface-variant max-w-lg mx-auto">
-            Select any two members of your family to discover their relationship, the number of generations separating them, and any shared ancestors.
-          </p>
+          <h3 className="font-serif text-headline-md text-primary mb-2">{t('explore.howTitle')}</h3>
+          <p className="font-sans text-body-md text-on-surface-variant max-w-lg mx-auto">{t('explore.howDesc')}</p>
         </div>
       )}
     </div>

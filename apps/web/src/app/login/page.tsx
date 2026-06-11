@@ -3,15 +3,21 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { authApi, storeAuth } from '@/lib/api'
+import { LanguageToggle } from '@/components/LanguageToggle'
+
+type Mode = 'login' | 'register'
 
 export default function LoginPage() {
   const router = useRouter()
+  const [mode, setMode] = useState<Mode>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [emailError, setEmailError] = useState('')
-  const [passwordError, setPasswordError] = useState('')
+  const [error, setError] = useState('')
   const [shakeCard, setShakeCard] = useState(false)
 
   const triggerShake = () => {
@@ -21,26 +27,42 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setEmailError('')
-    setPasswordError('')
+    setError('')
 
     if (!email.includes('@')) {
-      setEmailError('Please enter a valid archival email.')
+      setError('Please enter a valid email address.')
+      triggerShake()
+      return
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.')
       triggerShake()
       return
     }
 
     setIsLoading(true)
+    try {
+      const result =
+        mode === 'login'
+          ? await authApi.login(email, password)
+          : await authApi.register(email, password, firstName || undefined, lastName || undefined)
 
-    // Dev bypass: any email/password goes to dashboard
-    await new Promise((r) => setTimeout(r, 800))
-    setIsLoading(false)
-    router.push('/dashboard')
+      storeAuth(result.userId, result.token)
+      router.push('/dashboard')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Something went wrong'
+      setError(msg.includes('401') || msg.includes('Invalid') ? 'Invalid email or password.' : msg)
+      triggerShake()
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <div className="bg-heritage-gradient min-h-screen flex items-center justify-center relative overflow-hidden font-sans">
-      {/* Floating orbs */}
+      <div className="absolute top-4 right-4 z-20">
+        <LanguageToggle />
+      </div>
       <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-secondary-container/30 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-tertiary-fixed/20 blur-[120px] rounded-full pointer-events-none" />
 
@@ -54,8 +76,26 @@ export default function LoginPage() {
             </div>
           </Link>
           <p className="font-sans text-body-md text-on-surface-variant italic">
-            Connecting the threads of your family's story.
+            Connecting the threads of your family&apos;s story.
           </p>
+        </div>
+
+        {/* Mode toggle */}
+        <div className="flex rounded-xl overflow-hidden border border-outline-variant mb-6">
+          {(['login', 'register'] as Mode[]).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => { setMode(m); setError('') }}
+              className={`flex-1 py-3 text-label-md font-sans transition-all ${
+                mode === m
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface text-on-surface-variant hover:bg-surface-container-low'
+              }`}
+            >
+              {m === 'login' ? 'Sign In' : 'Create Account'}
+            </button>
+          ))}
         </div>
 
         {/* Card */}
@@ -63,6 +103,27 @@ export default function LoginPage() {
           className={`bg-surface/70 backdrop-blur-xl border border-outline-variant/50 rounded-2xl archival-shadow-lg p-8 md:p-10 transition-all duration-500 ${shakeCard ? 'error-shake' : ''}`}
         >
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Name fields — register only */}
+            {mode === 'register' && (
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'First Name', value: firstName, set: setFirstName, placeholder: 'Hari' },
+                  { label: 'Last Name', value: lastName, set: setLastName, placeholder: 'Sharma' },
+                ].map(({ label, value, set, placeholder }) => (
+                  <div key={label} className="space-y-2">
+                    <label className="text-label-md font-sans text-on-surface-variant">{label}</label>
+                    <input
+                      type="text"
+                      value={value}
+                      onChange={(e) => set(e.target.value)}
+                      placeholder={placeholder}
+                      className="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary transition-all placeholder:text-outline-variant/60"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Email */}
             <div className="space-y-2">
               <label className="text-label-md font-sans text-on-surface-variant flex items-center gap-2" htmlFor="email">
@@ -81,9 +142,6 @@ export default function LoginPage() {
                 />
                 <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
               </div>
-              {emailError && (
-                <p className="text-v-error text-caption font-sans font-medium italic">{emailError}</p>
-              )}
             </div>
 
             {/* Password */}
@@ -111,29 +169,15 @@ export default function LoginPage() {
                   {showPassword ? '🙈' : '👁'}
                 </button>
               </div>
-              {passwordError && (
-                <p className="text-v-error text-caption font-sans font-medium italic">{passwordError}</p>
+              {mode === 'register' && (
+                <p className="text-caption font-sans text-on-surface-variant">Minimum 6 characters</p>
               )}
             </div>
 
-            {/* Remember & Forgot */}
-            <div className="flex items-center justify-between pt-2">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 rounded-sm border-outline-variant text-secondary focus:ring-0 bg-transparent"
-                />
-                <span className="text-label-md font-sans text-on-surface-variant group-hover:text-primary transition-colors">
-                  Remember me
-                </span>
-              </label>
-              <a
-                href="#"
-                className="text-label-md font-sans text-secondary hover:text-on-tertiary-container transition-colors underline-offset-4 hover:underline"
-              >
-                Forgot password?
-              </a>
-            </div>
+            {/* Error */}
+            {error && (
+              <p className="text-v-error text-caption font-sans font-medium italic">{error}</p>
+            )}
 
             {/* Submit */}
             <button
@@ -144,12 +188,12 @@ export default function LoginPage() {
               {isLoading ? (
                 <>
                   <span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin-slow" />
-                  Verifying Lineage...
+                  {mode === 'login' ? 'Verifying Lineage...' : 'Creating Archive...'}
                 </>
               ) : (
                 <>
-                  <span>🗝</span>
-                  Enter the Archive
+                  <span>{mode === 'login' ? '🗝' : '🌿'}</span>
+                  {mode === 'login' ? 'Enter the Archive' : 'Begin Your Lineage'}
                 </>
               )}
             </button>
@@ -158,15 +202,18 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="mt-10 pt-6 border-t border-outline-variant/30 text-center">
             <p className="text-body-md font-sans text-on-surface-variant">
-              New to the lineage?{' '}
-              <a href="#" className="text-primary font-semibold hover:underline underline-offset-4 ml-1">
-                Create an account
-              </a>
+              {mode === 'login' ? 'New to the lineage?' : 'Already have an account?'}{' '}
+              <button
+                type="button"
+                onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError('') }}
+                className="text-primary font-semibold hover:underline underline-offset-4 ml-1"
+              >
+                {mode === 'login' ? 'Create an account' : 'Sign in'}
+              </button>
             </p>
           </div>
         </div>
 
-        {/* Footer credits */}
         <footer className="mt-8 text-center text-on-surface-variant/60 text-caption font-sans space-y-2">
           <p>© 2024 Vansha Lineage. Preserving history for the next generation.</p>
           <div className="flex justify-center gap-4">

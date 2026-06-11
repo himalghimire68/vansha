@@ -6,12 +6,14 @@ import Link from 'next/link'
 import DashboardLayout from '@/app/dashboard-layout'
 import { api } from '@/lib/api'
 import { GotraSelect, SurnameSelect, CasteSelect } from '@/components/GotraSelect'
+import { useLanguage } from '@/providers/LanguageProvider'
 
 const NEPAL_PROVINCES = [
   'Koshi', 'Madhesh', 'Bagmati', 'Gandaki', 'Lumbini', 'Karnali', 'Sudurpashchim',
 ]
 
 export default function EditPersonPage() {
+  const { t } = useLanguage()
   const params = useParams()
   const router = useRouter()
   const treeId = params?.id as string
@@ -138,19 +140,17 @@ export default function EditPersonPage() {
       <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-caption font-sans text-on-surface-variant">
-          <Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
+          <Link href="/dashboard" className="hover:text-primary transition-colors">{t('common.dashboard')}</Link>
           <span>›</span>
-          <Link href={`/trees/${treeId}`} className="hover:text-primary transition-colors">Family Tree</Link>
+          <Link href={`/trees/${treeId}`} className="hover:text-primary transition-colors">{t('tree.heading')}</Link>
           <span>›</span>
-          <span className="text-primary">Edit Member</span>
+          <span className="text-primary">{t('person.editMember')}</span>
         </div>
 
         <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 md:p-10 archival-shadow">
           <div className="mb-8">
-            <h1 className="font-serif text-headline-lg text-primary mb-2">Edit Member</h1>
-            <p className="font-sans text-body-md text-on-surface-variant">
-              Update the details for this family member.
-            </p>
+            <h1 className="font-serif text-headline-lg text-primary mb-2">{t('person.editMember')}</h1>
+            <p className="font-sans text-body-md text-on-surface-variant">{t('person.editSubtext')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -166,7 +166,7 @@ export default function EditPersonPage() {
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-on-surface-variant">
                     <span className="text-3xl">📷</span>
-                    <span className="text-[10px] font-sans font-semibold uppercase tracking-wide">Add Photo</span>
+                    <span className="text-[10px] font-sans font-semibold uppercase tracking-wide">{t('person.photo')}</span>
                   </div>
                 )}
               </div>
@@ -174,43 +174,43 @@ export default function EditPersonPage() {
               <div className="flex items-center gap-3">
                 <button type="button" onClick={() => fileInputRef.current?.click()}
                   className="text-label-md font-sans text-secondary hover:underline transition-colors">
-                  {photoPreview ? 'Change Photo' : 'Upload Photo'}
+                  {photoPreview ? t('person.changePhoto') : t('person.uploadPhoto')}
                 </button>
                 {photoPreview && (
                   <button type="button" onClick={removePhoto}
                     className="text-label-md font-sans text-v-error hover:underline transition-colors">
-                    Remove
+                    {t('person.removePhoto')}
                   </button>
                 )}
               </div>
-              <p className="text-caption font-sans text-on-surface-variant/60">JPG, PNG or WEBP · max 5 MB</p>
+              <p className="text-caption font-sans text-on-surface-variant/60">{t('person.photoHint')}</p>
             </div>
 
             {/* Name */}
             <fieldset className="space-y-5">
-              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Full Name</legend>
+              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">{t('person.fullName')}</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">First Name *</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.firstName')} *</label>
                   <input type="text" value={form.firstName} onChange={set('firstName')}
-                    placeholder="e.g. Ram" required className={inputClass} />
+                    placeholder={t('person.firstHolder')} required className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Middle Name</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.middleName')}</label>
                   <input type="text" value={form.middleName} onChange={set('middleName')}
-                    placeholder="e.g. Prasad" className={inputClass} />
+                    placeholder={t('person.middleHolder')} className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Last Name *</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.lastName')} *</label>
                   <SurnameSelect value={form.lastName} gotra={form.gotra}
-                    onChange={(s) => setForm(prev => ({ ...prev, lastName: s }))} placeholder="e.g. Ghimire" />
+                    onChange={(s) => setForm(prev => ({ ...prev, lastName: s }))} placeholder={t('person.lastHolder')} />
                 </div>
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Nepali Name</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.nepaliName')}</label>
                   <input type="text" value={form.nepaliName} onChange={set('nepaliName')}
                     placeholder="नेपाली नाम" className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
@@ -220,36 +220,36 @@ export default function EditPersonPage() {
 
             {/* Vital Details */}
             <fieldset className="space-y-5">
-              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Vital Details</legend>
+              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">{t('person.vitalDetails')}</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Gender</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.gender')}</label>
                   <select value={form.gender} onChange={set('gender')}
                     className="w-full bg-transparent border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary transition-colors">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="male">{t('person.male')}</option>
+                    <option value="female">{t('person.female')}</option>
+                    <option value="other">{t('person.other')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Status</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.status')}</label>
                   <select value={form.isLiving ? 'living' : 'ancestor'}
                     onChange={(e) => setForm(prev => ({ ...prev, isLiving: e.target.value === 'living' }))}
                     className="w-full bg-transparent border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary transition-colors">
-                    <option value="living">Living</option>
-                    <option value="ancestor">Ancestor (Deceased)</option>
+                    <option value="living">{t('person.living')}</option>
+                    <option value="ancestor">{t('person.deceased')}</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Birth Date</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.birthDate')}</label>
                   <input type="date" value={form.birthDate} onChange={set('birthDate')} className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
                 {!form.isLiving && (
                   <div className="relative group">
-                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">Death Date</label>
+                    <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.deathDate')}</label>
                     <input type="date" value={form.deathDate} onChange={set('deathDate')} className={inputClass} />
                     <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                   </div>
@@ -257,24 +257,24 @@ export default function EditPersonPage() {
               </div>
               <div className="relative group" style={{ maxWidth: 180 }}>
                 <label className="text-caption font-sans text-on-surface-variant mb-1 block">
-                  Birth Order <span className="opacity-50">(1 = eldest)</span>
+                  {t('person.birthOrder')}
                 </label>
                 <input type="number" min="1" max="20" value={form.birthOrder}
-                  onChange={set('birthOrder')} placeholder="e.g. 1" className={inputClass} />
+                  onChange={set('birthOrder')} placeholder={t('person.birthOrderHolder')} className={inputClass} />
                 <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
               </div>
             </fieldset>
 
             {/* Heritage */}
             <fieldset className="space-y-5">
-              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Lineage & Heritage</legend>
+              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">{t('person.heritageSection')}</legend>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Gotra</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.gotra')}</label>
                   <GotraSelect value={form.gotra} onChange={(g) => setForm(prev => ({ ...prev, gotra: g }))} />
                 </div>
                 <div>
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Surname / Caste</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.caste')}</label>
                   <CasteSelect
                     value={form.caste}
                     onChangeValue={(caste) => setForm(prev => ({ ...prev, caste }))}
@@ -284,23 +284,23 @@ export default function EditPersonPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">Ancestral Village</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.village')}</label>
                   <input type="text" value={form.ancestralVillage} onChange={set('ancestralVillage')}
-                    placeholder="e.g. Gorkha" className={inputClass} />
+                    placeholder={t('person.villageHolder')} className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
                 <div className="relative group">
-                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">District</label>
+                  <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.district')}</label>
                   <input type="text" value={form.ancestralDistrict} onChange={set('ancestralDistrict')}
-                    placeholder="e.g. Gorkha" className={inputClass} />
+                    placeholder={t('person.districtHolder')} className={inputClass} />
                   <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
                 </div>
               </div>
               <div>
-                <label className="text-caption font-sans text-on-surface-variant mb-1 block">Province</label>
+                <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.province')}</label>
                 <select value={form.ancestralProvince} onChange={set('ancestralProvince')}
                   className="w-full bg-transparent border-b border-outline-variant py-3 px-1 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary transition-colors">
-                  <option value="">— Select Province —</option>
+                  <option value="">{t('newTree.selectProvince')}</option>
                   {NEPAL_PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
@@ -308,20 +308,20 @@ export default function EditPersonPage() {
 
             {/* Biography & Occupation */}
             <fieldset className="space-y-5">
-              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">Life Details</legend>
+              <legend className="font-sans text-label-md text-on-surface-variant uppercase tracking-wider mb-4">{t('person.lifeDetails')}</legend>
               <div className="relative group">
-                <label className="text-caption font-sans text-on-surface-variant mb-1 block">Occupation</label>
+                <label className="text-caption font-sans text-on-surface-variant mb-1 block">{t('person.occupation')}</label>
                 <input type="text" value={form.occupation} onChange={set('occupation')}
-                  placeholder="e.g. Farmer, Teacher, Merchant" className={inputClass} />
+                  placeholder={t('person.occupationHolder')} className={inputClass} />
                 <div className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-focus-within:w-full" />
               </div>
               <div>
-                <label className="text-caption font-sans text-on-surface-variant mb-2 block">Biography</label>
+                <label className="text-caption font-sans text-on-surface-variant mb-2 block">{t('person.biography')}</label>
                 <textarea
                   value={form.biography}
                   onChange={set('biography')}
                   rows={4}
-                  placeholder="A brief account of their life, contributions, and legacy…"
+                  placeholder={t('person.bioHolder')}
                   className="w-full bg-transparent border border-outline-variant rounded-xl p-3 text-primary text-body-md font-sans focus:ring-0 focus:outline-none focus:border-secondary transition-colors resize-none placeholder:text-outline-variant/60"
                 />
               </div>
@@ -338,14 +338,14 @@ export default function EditPersonPage() {
                 className="flex-1 bg-primary text-on-primary text-label-md font-sans py-4 rounded-brand hover:opacity-90 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {isLoading
-                  ? <><span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" /> Saving…</>
-                  : 'Save Changes'}
+                  ? <><span className="inline-block w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" /> {t('person.saving')}</>
+                  : t('person.saveChanges')}
               </button>
               <Link
                 href={`/trees/${treeId}`}
                 className="px-6 py-4 border border-outline-variant text-on-surface-variant text-label-md font-sans rounded-brand hover:border-secondary transition-all text-center"
               >
-                Cancel
+                {t('person.cancel')}
               </Link>
             </div>
           </form>
