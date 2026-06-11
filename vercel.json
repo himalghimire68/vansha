@@ -1,0 +1,7 @@
+{
+  "buildCommand": "npx turbo run build --filter=@vansha/web...",
+  "outputDirectory": "apps/web/.next",
+  "installCommand": "yarn install",
+  "framework": "nextjs",
+  "ignoreCommand": "npx turbo-ignore @vansha/web"
+}
