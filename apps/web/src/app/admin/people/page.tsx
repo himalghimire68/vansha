@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useAdmin } from '../layout'
+import { useAdmin } from '../admin-context'
 import { adminApi, AdminPerson, AdminFamily, Paginated } from '@/lib/adminApi'
 
 const LIMIT = 20
@@ -68,7 +68,7 @@ export default function AdminPeoplePage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">People</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          {data ? `${data.total} total` : '—'} across all families
+          {data ? `${data.total} total` : 'â€”'} across all families
         </p>
       </div>
 
@@ -92,7 +92,7 @@ export default function AdminPeoplePage() {
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Search by name or gotra…"
+          placeholder="Search by name or gotraâ€¦"
           className="flex-1 min-w-48 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-colors shadow-sm"
         />
         <button type="submit"
@@ -145,13 +145,13 @@ export default function AdminPeoplePage() {
                   <p className="font-semibold text-slate-800">
                     {p.firstName} {p.middleName ? p.middleName + ' ' : ''}{p.lastName}
                   </p>
-                  <p className="text-xs text-slate-400 font-mono mt-0.5">{p.id.slice(0, 8)}…</p>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5">{p.id.slice(0, 8)}â€¦</p>
                 </td>
                 <td className="px-4 py-4 text-slate-600 text-xs">{p.familyName}</td>
-                <td className="px-4 py-4 text-slate-500 text-xs">{p.gotra || '—'}</td>
+                <td className="px-4 py-4 text-slate-500 text-xs">{p.gotra || 'â€”'}</td>
                 <td className="px-4 py-4 text-center">
                   <span className="text-base">
-                    {p.gender === 'male' ? '♂' : p.gender === 'female' ? '♀' : '⚧'}
+                    {p.gender === 'male' ? 'â™‚' : p.gender === 'female' ? 'â™€' : 'âš§'}
                   </span>
                 </td>
                 <td className="px-4 py-4 text-center">
@@ -183,7 +183,7 @@ export default function AdminPeoplePage() {
       {data && totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-xs text-slate-500">
-            Showing {(page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, data.total)} of {data.total}
+            Showing {(page - 1) * LIMIT + 1}â€“{Math.min(page * LIMIT, data.total)} of {data.total}
           </p>
           <div className="flex gap-2">
             <button
@@ -191,7 +191,7 @@ export default function AdminPeoplePage() {
               onClick={() => { const p = page - 1; setPage(p); load(p) }}
               className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-colors"
             >
-              ← Prev
+              â† Prev
             </button>
             <span className="px-3 py-1.5 text-xs text-slate-500">{page} / {totalPages}</span>
             <button
@@ -199,7 +199,7 @@ export default function AdminPeoplePage() {
               onClick={() => { const p = page + 1; setPage(p); load(p) }}
               className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-colors"
             >
-              Next →
+              Next â†’
             </button>
           </div>
         </div>

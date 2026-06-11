@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
-import { useAdmin } from '../layout'
+import { useAdmin } from '../admin-context'
 import { adminApi } from '@/lib/adminApi'
 
 const THEMES = [
@@ -123,7 +123,7 @@ export default function AdminSettingsPage() {
           </span>
         )}
         {saving && (
-          <span className="text-xs text-slate-400">Saving…</span>
+          <span className="text-xs text-slate-400">Savingâ€¦</span>
         )}
       </div>
 

@@ -1,10 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { useAdmin } from '../layout'
+import { useAdmin } from '../admin-context'
 import { adminApi } from '@/lib/adminApi'
 
-// ── Editable field types ───────────────────────────────────────────────────
+// â”€â”€ Editable field types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface FieldDef {
   key: string
   label: string
@@ -21,7 +21,7 @@ const SECTIONS: { heading: string; fields: FieldDef[] }[] = [
     ],
   },
   {
-    heading: 'Homepage — Hero',
+    heading: 'Homepage â€” Hero',
     fields: [
       { key: 'content.homepage.hero.badge',    label: 'Badge Text',          hint: 'Small tag above the headline, e.g. "The Living Archive"' },
       { key: 'content.homepage.hero.title',    label: 'Hero Headline',        hint: 'Main headline on the landing page', multiline: true },
@@ -29,21 +29,21 @@ const SECTIONS: { heading: string; fields: FieldDef[] }[] = [
     ],
   },
   {
-    heading: 'Homepage — Showcase Card',
+    heading: 'Homepage â€” Showcase Card',
     fields: [
       { key: 'content.homepage.showcase.name',   label: 'Lineage Name',   hint: 'e.g. "The Ghimire Lineage"' },
-      { key: 'content.homepage.showcase.detail', label: 'Lineage Detail',  hint: 'e.g. "Six generations · Gorkha, Nepal · Est. 1820"' },
+      { key: 'content.homepage.showcase.detail', label: 'Lineage Detail',  hint: 'e.g. "Six generations Â· Gorkha, Nepal Â· Est. 1820"' },
     ],
   },
   {
-    heading: 'Homepage — Philosophy Quote',
+    heading: 'Homepage â€” Philosophy Quote',
     fields: [
       { key: 'content.homepage.quote',        label: 'Quote Text',   multiline: true },
       { key: 'content.homepage.quote.author', label: 'Attribution',  hint: 'Author name without the dash, e.g. "Marcus Garvey"' },
     ],
   },
   {
-    heading: 'Homepage — CTA Section',
+    heading: 'Homepage â€” CTA Section',
     fields: [
       { key: 'content.homepage.cta.title',    label: 'CTA Headline', multiline: false },
       { key: 'content.homepage.cta.subtitle', label: 'CTA Subtext',  multiline: true },
@@ -52,12 +52,12 @@ const SECTIONS: { heading: string; fields: FieldDef[] }[] = [
   {
     heading: 'User Dashboard',
     fields: [
-      { key: 'content.dashboard.greeting', label: 'Dashboard Greeting', hint: 'The "Welcome back, …" headline shown on the user dashboard' },
+      { key: 'content.dashboard.greeting', label: 'Dashboard Greeting', hint: 'The "Welcome back, â€¦" headline shown on the user dashboard' },
     ],
   },
 ]
 
-// ── Single field row ───────────────────────────────────────────────────────
+// â”€â”€ Single field row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function FieldRow({
   def,
   value,
@@ -110,7 +110,7 @@ function FieldRow({
               disabled={saving}
               className="text-xs px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 transition-colors"
             >
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? 'Savingâ€¦' : 'Save'}
             </button>
           )}
           {dirty && !saving && (
@@ -142,7 +142,7 @@ function FieldRow({
   )
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────
+// â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function AdminContentPage() {
   const { adminKey, onUnauthorized } = useAdmin()
   const [config, setConfig] = useState<Record<string, string>>({})

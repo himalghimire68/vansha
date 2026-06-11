@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { useAdmin } from '../layout'
+import { useAdmin } from '../admin-context'
 import { adminApi, AdminGotra } from '@/lib/adminApi'
 
 function SurnameList({
@@ -71,7 +71,7 @@ function SurnameList({
                       className="text-green-600 hover:text-green-700 text-sm font-bold px-1"
                       title="Save"
                     >
-                      ✓
+                      âœ“
                     </button>
                     <button
                       type="button"
@@ -79,7 +79,7 @@ function SurnameList({
                       className="text-slate-400 hover:text-slate-600 text-sm px-1"
                       title="Cancel"
                     >
-                      ✕
+                      âœ•
                     </button>
                   </>
                 ) : (
@@ -91,7 +91,7 @@ function SurnameList({
                       className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition-all text-xs px-1"
                       title="Edit"
                     >
-                      ✎
+                      âœŽ
                     </button>
                     <button
                       type="button"
@@ -99,7 +99,7 @@ function SurnameList({
                       className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-all text-xs px-1"
                       title="Remove"
                     >
-                      ✕
+                      âœ•
                     </button>
                   </>
                 )}
@@ -114,7 +114,7 @@ function SurnameList({
             value={newValue}
             onChange={e => setNewValue(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add() } }}
-            placeholder="Add surname…"
+            placeholder="Add surnameâ€¦"
             className="flex-1 px-3 py-2 text-sm bg-slate-50 focus:outline-none focus:bg-white placeholder-slate-400"
           />
           <button
@@ -127,7 +127,7 @@ function SurnameList({
           </button>
         </div>
       </div>
-      <p className="mt-1 text-[11px] text-slate-400">{surnames.length} surname{surnames.length !== 1 ? 's' : ''} · hover a row to edit or remove</p>
+      <p className="mt-1 text-[11px] text-slate-400">{surnames.length} surname{surnames.length !== 1 ? 's' : ''} Â· hover a row to edit or remove</p>
     </div>
   )
 }
@@ -213,7 +213,7 @@ function GotraRow({
           {isDirty && !open && (
             <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">unsaved</span>
           )}
-          <span className="text-slate-400 text-xs">{open ? '▲' : '▼'}</span>
+          <span className="text-slate-400 text-xs">{open ? 'â–²' : 'â–¼'}</span>
         </div>
       </div>
 
@@ -244,7 +244,7 @@ function GotraRow({
               <input
                 value={nepali}
                 onChange={e => setNepali(e.target.value)}
-                placeholder="e.g. कश्यप"
+                placeholder="e.g. à¤•à¤¶à¥à¤¯à¤ª"
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-800 focus:outline-none focus:border-blue-400"
               />
             </div>
@@ -281,7 +281,7 @@ function GotraRow({
                 disabled={saving}
                 className="text-xs px-4 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 transition-colors"
               >
-                {saving ? 'Saving…' : 'Save'}
+                {saving ? 'Savingâ€¦' : 'Save'}
               </button>
             </div>
           </div>
@@ -356,7 +356,7 @@ export default function AdminGotrasPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Gotras & Surnames</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {gotras.length} gotras · {gotras.reduce((n, g) => n + g.surnames.length, 0)} total surnames
+            {gotras.length} gotras Â· {gotras.reduce((n, g) => n + g.surnames.length, 0)} total surnames
           </p>
         </div>
         <button
@@ -390,7 +390,7 @@ export default function AdminGotrasPage() {
               <input
                 value={newNepali}
                 onChange={e => setNewNepali(e.target.value)}
-                placeholder="e.g. वशिष्ठ"
+                placeholder="e.g. à¤µà¤¶à¤¿à¤·à¥à¤ "
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-blue-400"
               />
             </div>
@@ -407,7 +407,7 @@ export default function AdminGotrasPage() {
               disabled={adding || !newGotra.trim() || !newNepali.trim()}
               className="px-5 py-2 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-60 transition-colors"
             >
-              {adding ? 'Creating…' : 'Create'}
+              {adding ? 'Creatingâ€¦' : 'Create'}
             </button>
           </div>
         </div>
@@ -419,7 +419,7 @@ export default function AdminGotrasPage() {
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Search by gotra name or surname…"
+          placeholder="Search by gotra name or surnameâ€¦"
           className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-colors shadow-sm"
         />
       </div>

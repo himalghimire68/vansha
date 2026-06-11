@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
-import { useAdmin } from './layout'
+import { useAdmin } from './admin-context'
 import { adminApi, AdminStats } from '@/lib/adminApi'
 import Link from 'next/link'
 
@@ -44,7 +44,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">Platform overview — Vansha</p>
+        <p className="text-sm text-slate-500 mt-1">Platform overview â€” Vansha</p>
       </div>
 
       {err && (
@@ -61,14 +61,14 @@ export default function AdminDashboard() {
       ) : stats && (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <StatCard icon="🏛️" label="Total Families" value={stats.totalFamilies} color="#3b82f6" />
-            <StatCard icon="👥" label="Family Members" value={stats.totalPeople} color="#10b981" />
-            <StatCard icon="👤" label="Users" value={stats.totalUsers} sub={`${stats.activeUsers} active`} color="#f59e0b" />
+            <StatCard icon="ðŸ›ï¸" label="Total Families" value={stats.totalFamilies} color="#3b82f6" />
+            <StatCard icon="ðŸ‘¥" label="Family Members" value={stats.totalPeople} color="#10b981" />
+            <StatCard icon="ðŸ‘¤" label="Users" value={stats.totalUsers} sub={`${stats.activeUsers} active`} color="#f59e0b" />
           </div>
           <div className="grid grid-cols-2 gap-4 mb-8">
-            <StatCard icon="✅" label="Approvals" value={stats.totalApprovals} color="#8b5cf6" />
+            <StatCard icon="âœ…" label="Approvals" value={stats.totalApprovals} color="#8b5cf6" />
             <StatCard
-              icon="⏳"
+              icon="â³"
               label="Pending Approvals"
               value={stats.pendingApprovals}
               sub={stats.pendingApprovals > 0 ? 'Needs attention' : 'All clear'}
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <h2 className="font-semibold text-slate-800">Recent Families</h2>
-              <Link href="/admin/families" className="text-xs text-blue-600 hover:underline">View all →</Link>
+              <Link href="/admin/families" className="text-xs text-blue-600 hover:underline">View all â†’</Link>
             </div>
             <div className="divide-y divide-slate-100">
               {stats.recentFamilies.length === 0 && (
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <h2 className="font-semibold text-slate-800">Recent Members</h2>
-              <Link href="/admin/people" className="text-xs text-blue-600 hover:underline">View all →</Link>
+              <Link href="/admin/people" className="text-xs text-blue-600 hover:underline">View all â†’</Link>
             </div>
             <div className="divide-y divide-slate-100">
               {stats.recentPeople.length === 0 && (

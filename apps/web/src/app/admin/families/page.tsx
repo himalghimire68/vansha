@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useAdmin } from '../layout'
+import { useAdmin } from '../admin-context'
 import { adminApi, AdminFamily, Paginated } from '@/lib/adminApi'
 
 const LIMIT = 20
@@ -63,7 +63,7 @@ export default function AdminFamiliesPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Families</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {data ? `${data.total} total` : '—'}
+            {data ? `${data.total} total` : 'â€”'}
           </p>
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function AdminFamiliesPage() {
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Search by name, village…"
+          placeholder="Search by name, villageâ€¦"
           className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 transition-colors shadow-sm"
         />
         <button type="submit"
@@ -127,10 +127,10 @@ export default function AdminFamiliesPage() {
               <tr key={f.id} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4">
                   <p className="font-semibold text-slate-800">{f.name}</p>
-                  <p className="text-xs text-slate-400 font-mono mt-0.5">{f.id.slice(0, 8)}…</p>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5">{f.id.slice(0, 8)}â€¦</p>
                 </td>
                 <td className="px-4 py-4 text-slate-600">
-                  {[f.ancestralVillage, f.ancestralDistrict].filter(Boolean).join(', ') || '—'}
+                  {[f.ancestralVillage, f.ancestralDistrict].filter(Boolean).join(', ') || 'â€”'}
                 </td>
                 <td className="px-4 py-4 text-center">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
@@ -175,7 +175,7 @@ export default function AdminFamiliesPage() {
       {data && totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-xs text-slate-500">
-            Showing {(page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, data.total)} of {data.total}
+            Showing {(page - 1) * LIMIT + 1}â€“{Math.min(page * LIMIT, data.total)} of {data.total}
           </p>
           <div className="flex gap-2">
             <button
@@ -183,7 +183,7 @@ export default function AdminFamiliesPage() {
               onClick={() => { const p = page - 1; setPage(p); load(p) }}
               className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-colors"
             >
-              ← Prev
+              â† Prev
             </button>
             <span className="px-3 py-1.5 text-xs text-slate-500">{page} / {totalPages}</span>
             <button
@@ -191,7 +191,7 @@ export default function AdminFamiliesPage() {
               onClick={() => { const p = page + 1; setPage(p); load(p) }}
               className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-colors"
             >
-              Next →
+              Next â†’
             </button>
           </div>
         </div>

@@ -1,7 +1,7 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useAdmin } from '../layout'
+import { useAdmin } from '../admin-context'
 import { adminApi, AdminUser } from '@/lib/adminApi'
 
 const LIMIT = 20
@@ -31,7 +31,7 @@ function Badge({ text, colorClass }: { text: string; colorClass: string }) {
   )
 }
 
-// ── Create/Edit modal ──────────────────────────────────────────────────────
+// â”€â”€ Create/Edit modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface UserFormProps {
   initial?: AdminUser | null
   onClose: () => void
@@ -76,7 +76,7 @@ function UserForm({ initial, onClose, onSaved, adminKey, onUnauthorized }: UserF
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
           <h2 className="text-base font-bold text-slate-900">{isEdit ? 'Edit User' : 'Create User'}</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">×</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl leading-none">Ã—</button>
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
@@ -167,7 +167,7 @@ function UserForm({ initial, onClose, onSaved, adminKey, onUnauthorized }: UserF
             disabled={saving}
             className="px-5 py-2 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-60 transition-colors"
           >
-            {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Create User'}
+            {saving ? 'Savingâ€¦' : isEdit ? 'Save Changes' : 'Create User'}
           </button>
         </div>
       </div>
@@ -175,7 +175,7 @@ function UserForm({ initial, onClose, onSaved, adminKey, onUnauthorized }: UserF
   )
 }
 
-// ── Main page ──────────────────────────────────────────────────────────────
+// â”€â”€ Main page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function AdminUsersPage() {
   const { adminKey, onUnauthorized } = useAdmin()
   const [data, setData] = useState<{ items: AdminUser[]; total: number } | null>(null)
@@ -265,7 +265,7 @@ export default function AdminUsersPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Users</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {data ? `${data.total} total` : '—'} registered users
+            {data ? `${data.total} total` : 'â€”'} registered users
           </p>
         </div>
         <button
@@ -302,7 +302,7 @@ export default function AdminUsersPage() {
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Search by name or email…"
+          placeholder="Search by name or emailâ€¦"
           className="flex-1 min-w-48 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 shadow-sm"
         />
         <button type="submit" className="px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-800 transition-colors">
@@ -364,7 +364,7 @@ export default function AdminUsersPage() {
                   <Badge text={u.status} colorClass={STATUS_COLORS[u.status] || 'bg-slate-100 text-slate-600'} />
                 </td>
                 <td className="px-4 py-4 text-xs text-slate-500">
-                  {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString() : '—'}
+                  {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString() : 'â€”'}
                 </td>
                 <td className="px-4 py-4 text-xs text-slate-500">
                   {new Date(u.createdAt).toLocaleDateString()}
@@ -419,7 +419,7 @@ export default function AdminUsersPage() {
       {data && totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-xs text-slate-500">
-            Showing {(page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, data.total)} of {data.total}
+            Showing {(page - 1) * LIMIT + 1}â€“{Math.min(page * LIMIT, data.total)} of {data.total}
           </p>
           <div className="flex gap-2">
             <button
@@ -427,7 +427,7 @@ export default function AdminUsersPage() {
               onClick={() => { const p = page - 1; setPage(p); load(p) }}
               className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-colors"
             >
-              ← Prev
+              â† Prev
             </button>
             <span className="px-3 py-1.5 text-xs text-slate-500">{page} / {totalPages}</span>
             <button
@@ -435,7 +435,7 @@ export default function AdminUsersPage() {
               onClick={() => { const p = page + 1; setPage(p); load(p) }}
               className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-colors"
             >
-              Next →
+              Next â†’
             </button>
           </div>
         </div>

@@ -1,15 +1,9 @@
 'use client'
 
-import { useState, useEffect, createContext, useContext } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-
-interface AdminCtx {
-  adminKey: string
-  onUnauthorized: () => void
-}
-const AdminContext = createContext<AdminCtx>({ adminKey: '', onUnauthorized: () => {} })
-export const useAdmin = () => useContext(AdminContext)
+import { AdminContext } from './admin-context'
 
 function NavLink({ href, icon, label }: { href: string; icon: string; label: string }) {
   const pathname = usePathname()
